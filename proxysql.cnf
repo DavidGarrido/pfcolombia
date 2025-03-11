@@ -1,0 +1,40 @@
+datadir="/var/lib/proxysql"
+
+# Configuración de la interfaz de administración (puerto 6032)
+admin_variables=
+{
+    admin_credentials="admin:admin"
+    mysql_ifaces="0.0.0.0:6032"
+}
+
+mysql_variables=
+{
+    threads=4
+}
+
+# Lista de servidores backend a los que se conectará ProxySQL.
+# En este caso, se apunta al contenedor MySQL (mysql57) definido en el docker-compose.
+mysql_servers =
+(
+    {
+        address="mysql57"
+        port=3306
+        hostgroup=0
+        max_connections=100
+    }
+)
+
+# Usuarios para conexiones de clientes.
+# Aquí se define el usuario que la aplicación usará para conectarse (en este ejemplo, "root" con password "root").
+mysql_users =
+(
+    {
+        username = "root"
+        password = "root"
+        default_hostgroup = 0
+        active = 1
+    }
+)
+
+# Interfaz para conexiones de clientes (se configura para que escuche en el puerto 3306).
+mysql_ifaces="0.0.0.0:3306"

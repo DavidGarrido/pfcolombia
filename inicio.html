@@ -1,0 +1,30 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+     <title>registrar</title>
+     <link rel="stylesheet" href="login.css">
+</head>
+<body>
+        <div>   
+		<!--Formulario para el login -->
+        <form id="frmlogin" class="grupo-entradas" method="POST" action="login_registrar.php">
+        <input type="text" class="cajaentradatexto" placeholder="&#128273; Ingresar usuario" name="txtusuario" required>
+        <input type="password" class="cajaentradatexto" placeholder="&#128274; Ingresar contraseña" name="txtpassword" required>
+        <input type="checkbox" class="checkboxvai"><span>Recordar contraseña</span>
+        <button type="submit" class="botonenviar" name="btnloginx">Iniciar sesión</button>
+        </form>
+        </div>
+		<!--Formulario para registrar -->
+        <div><form id="frmregistrar" class="grupo-entradas" method="POST" action="login_registrar.php">
+            <input type="text" class="cajaentradatexto" placeholder="&#128273 Ingresar usuario" required 
+            name="txtusuario">
+            <input type="password" class="cajaentradatexto" placeholder="&#128274 Ingresar contraseña" required name="txtpassword">
+            <input type="checkbox" class="checkboxvai"><span>He leído y acepto los términos y condiciones de uso.</span>
+            <button type="submit" class="botonenviar" name="btnregistrarx">Registrar</button>
+            </form></div>
+        
+        </div>
+    
+   
+</body>
+</html>

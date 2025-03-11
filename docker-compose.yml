@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php74_app_pfcolombia
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+      # Cambia el host de la DB para que la aplicación se conecte a ProxySQL
+      - DB_HOST=proxysql
+      - DB_PORT=3306
+    depends_on:
+      - proxysql
+
+  proxysql:
+    image: proxysql/proxysql
+    container_name: proxysql_pfcolombia
+    restart: always
+    # Solo exponemos el puerto de administración (6032)
+    ports:
+      - "6032:6032"
+    depends_on:
+      - db
+    volumes:
+      - ./proxysql.cnf:/etc/proxysql.cnf
+
+  db:
+    image: mysql:5.7
+    container_name: mysql_pfcolombia
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: twsselvr_videx_app
+    command: --sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_pfcolombia
+    restart: always
+    ports:
+      - "8081:80"
+    volumes:
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:

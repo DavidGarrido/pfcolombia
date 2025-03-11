@@ -1,0 +1,435 @@
+@-ms-viewport{
+  width: device-width;
+}
+
+body { 
+	font: 18px Helvetica, Arial, sans-serif;
+	margin: 0px 5px 5px 5px; 
+	color: #444; 
+	text-size-adjust: auto;
+}
+
+.ui-autocomplete-loading {
+	background: white url("../images/ui-anim_basic_16x16.gif") right center no-repeat;
+}
+.btn-desc{
+      margin-top:-5px;
+      display: block;
+      position: relative;
+      font-size: 14px;
+      text-transform: uppercase;
+}
+.tablink {
+    background-color: #555;
+    color: white;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-size: 17px;
+    width: 25%;
+}
+
+.tablink:hover {
+    background-color: #777;
+}
+
+/* Style the tab content */
+.tabcontent {
+	padding: 20px;
+	display: none;
+	background-color: #f2f2f2;
+}
+
+table {
+	display: block;
+	overflow-x: auto;
+	white-space: nowrap;
+	width: 100%;
+}
+
+table.seguimientos {
+	display: table;
+	overflow-x: auto;
+	white-space: normal;
+	width: 100%;
+}
+
+table.accesos, table.campanas {
+	display: table;
+	overflow-x: auto;
+	white-space: normal;
+	width: 100%;
+}
+
+table.categorias {
+	display: table;
+	overflow-x: auto;
+	white-space: normal;
+	width: 100%;
+}
+
+table.grupos {
+	display: table;
+	overflow-x: auto;
+	white-space: normal;
+	width: 100%;
+}
+
+table.historico {
+	display: table;
+	overflow-x: auto;
+	white-space: normal;
+	width: 100%;
+}
+
+table.usuarios_sms {
+	display: table;
+	overflow-x: auto;
+	white-space: normal;
+	width: 100%;
+}
+
+table.grupos td {
+	padding-top:10px;
+	padding-bottom:10px;
+}
+
+
+img
+{
+	max-width: 400px;
+	top: 10%;
+	left: 10%;
+}
+
+
+th {
+	margin: 10px 10px 10px 10px;
+	padding: 10px 10px 10px 10px; 
+	background-color:#3498DB;
+	text-align:center;
+	color:#ffffff;
+	font-weight:bold;
+	font-family: Raavi, arial, helvetica, sans-serif;
+	text-size-adjust: auto;
+}
+
+td {
+	vertical-align:top;
+	font-family: Raavi, arial, helvetica, sans-serif;
+	text-size-adjust: auto;
+}
+
+#footer
+{
+	font-weight: bold;
+	color:#000;
+}
+
+/* Style the label to display next to the inputs */
+label {
+  padding: 12px 12px 12px 0;
+  display: inline-block;
+}
+
+/* Style the submit button */
+input[type=submit] {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  margin-left: 6px;
+  margin-right: 6px;
+  background-color: #10A100;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+
+/* Style the submit button */
+input[type=button] {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  margin-left: 6px;
+  margin-right: 6px;
+  background-color: #10A100;
+  color: white;
+  padding: 12px 20px 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+/* Style the submit button */
+input[type=button].eliminar {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  margin-left: 6px;
+  margin-right: 6px;
+  background-color: #9C9C9C;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+.inputfile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+	text-align:left;
+}
+
+.inputfile + label {
+  background-color: #F0FF00;
+  color: #000;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: left;
+	font-size: 1.25em;
+	font-weight: 700;
+	display: inline-block;
+}
+
+.inputfile:focus + label,
+.inputfile + label:hover {
+    background-color: #F5FF65;
+}
+
+/* Style the submit button */
+input[type=button].cancelar {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  margin-left: 6px;
+  margin-right: 6px;
+  background-color: #B90003;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+/* Style the submit button */
+a.paginacion {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  margin-left: 2px;
+  margin-right: 2px;
+  background-color: #0089FB;
+  color: white;
+  padding-right: 4px;
+  padding-left: 4px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Style the submit button */
+a.paginacion_sel {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  margin-left: 2px;
+  margin-right: 2px;
+  background-color: #10A100;
+  color: white;
+  padding-right: 4px;
+  padding-left: 4px;
+  border: none;
+  border-radius: 4px;
+  cursor: default;
+}
+
+
+/* Style the submit button */
+a.excel {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  margin-left: 6px;
+  margin-right: 6px;
+  background-color: #10A100;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+
+/* Style the submit button */
+a.opciones-tabla {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  margin-left: 6px;
+  margin-right: 6px;
+  background-color: #10A100;
+  color: white;
+  padding: 12px 12px 12px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Style the submit button */
+a.opciones-tabla:hover {
+  background-color: #15DB00;
+}
+
+/* Style the container */
+.container {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+/* Floating column for labels: 25% width */
+.col-25 {
+  float: left;
+  width: 25%;
+  margin-top: 6px;
+ text-align:left;
+}
+
+/* Floating column for labels: 25% width */
+.col-50 {
+  float: left;
+  width: 50%;
+  margin-top: 12px;
+  text-align:left;
+}
+
+/* Floating column for inputs: 75% width */
+.col-75 {
+  float: left;
+  width: 75%;
+  margin-top: 6px;
+}
+
+.row-check:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Clear floats after the columns */
+.row-tabla {
+    height: 200px;
+}
+
+.row-tabla:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style inputs, select elements and textareas */
+input[type=text], input[type=date], input[type=number], input[type=password], select, textarea{
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+input[type=checkbox]{	
+	height: 30px;
+	width: 30px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	vertical-align:middle;
+}
+
+/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+@media (max-width: 600px) {
+	table.accesos, table.campanas, table.grupos, table.usuarios_sms, table.historico {
+		display:block;
+		overflow-x: auto;
+		white-space: normal;
+		width: 99%;
+	}
+
+	.col-25, .col-75 {
+		width: 100%;
+		margin-top: 0;
+		text-align:center;
+	}
+	
+	.col-50 {
+		width: 100%;
+		margin-top: 12px;
+		text-align:left;
+	}
+	
+	input[type=button],input[type=submit] {
+		width: 100%;
+		margin-top: 12px;
+		text-align:center;
+	 }
+
+	img
+	{
+		max-width: 300px;
+		top: 10%;
+		left: 10%;
+	}
+
+}
+.container{
+      width: 100%!important;
+}
+.noti-all{
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+      margin-bottom: -10px;
+}
+.noti-all .text-center{
+      padding: 10px 20px;
+      border-radius: 25px;
+      background: #4cae4c;
+      color: #fff;
+      text-align: center;
+}
+.navbar{
+      margin-bottom: 0px !important;
+}
+.container-fluid{
+      display: flex;
+      justify-content: center;
+}
+.cont-flex{
+  display: flex;
+}
+.fl-cent{
+  justify-content: center;
+  text-align: center;
+}
+
+.form-horizontal .control-label{
+  text-align: left !important;
+}
