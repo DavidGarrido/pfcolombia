@@ -1,8 +1,8 @@
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function() {
   const form = document.getElementById("filtroReporte");
 
-  form.addEventListener("submit", function (event) {
+  form.addEventListener("submit", function(event) {
     event.preventDefault(); // Evita el envío normal del formulario
 
     // Obtener los valores de los selects
@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("/api/anual_report.php", {
       method: "POST",
       body: formData,
+      credentials: "include"
     })
       .then(response => response.json())
       .then(data => {
@@ -41,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (proyecto === "proyecto-felipe") {
           // Cargar la librería de Google Charts
           google.charts.load("current", { packages: ["corechart"] });
-          google.charts.setOnLoadCallback(function () {
+          google.charts.setOnLoadCallback(function() {
             // Crear la DataTable con los datos retornados por la API
             var chartData = google.visualization.arrayToDataTable([
               ["Elemento", "Valor", { role: "style" }],
@@ -52,6 +53,50 @@ document.addEventListener("DOMContentLoaded", function () {
               ["Cursos completados", data.cursos_act, "#E74C3C"],
               ["Voluntarios internos", data.internos, "#8E44AD"],
               ["Voluntarios externos", data.externos, "#6244AD"]
+            ]);
+
+            // Crear una vista para añadir anotaciones
+            var view = new google.visualization.DataView(chartData);
+            view.setColumns([
+              0, 1,
+              {
+                calc: "stringify",
+                sourceColumn: 1,
+                type: "string",
+                role: "annotation"
+              },
+              2
+            ]);
+
+            // Opciones de la gráfica
+            var options = {
+              bar: { groupWidth: "95%" },
+              legend: { position: "none" },
+              // Puedes ajustar otras opciones según necesites
+            };
+
+            // Dibujar la gráfica en el div con id "GraficaReporte"
+            var chart = new google.visualization.BarChart(document.getElementById("GraficaReporte"));
+            chart.draw(view, options);
+          });
+        }
+        if (proyecto === "evangelistas") {
+
+          // Cargar la librería de Google Charts
+          google.charts.load("current", { packages: ["corechart"] });
+          google.charts.setOnLoadCallback(function() {
+            // Crear la DataTable con los datos retornados por la API
+            var chartData = google.visualization.arrayToDataTable([
+              ["Elemento", "Valor", { role: "style" }],
+              ["Número de cárceles atendidas", data.prisiones_atendidas, "#2E86C1"],
+              ["Número de grupos Intramuros atendidos", data.grupos_intramuros, "#239B56"],
+              ["Número de grupos extramuros atendidos", data.grupos_extramuros, "#F39C12"],
+              ["Creyentes asistentes", data.total_creyente, "#E74C3C"],
+              ["Total de discípulos (LPP) que pasan a C&M", data.total_discipulos, "#8E44AD"],
+              ["Número de bautizados", data.bautizados, "#F1C40F"],
+              ["Número de voluntarios internos", data.discipulado, "#C0392B"],
+              ["Número de voluntarios externos", data.decisiones, "#C02B97"],
+              ["Número de pospenados que está acompañando", data.preparandose, "#6244AD"],
             ]);
 
             // Crear una vista para añadir anotaciones

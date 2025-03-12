@@ -149,13 +149,11 @@ $nombreGrafica = "CONSOLIDADOS CONFRATERNIDAD CARCELARIA DE COLOMBIA";
 
             function drawChart() {
               var data = google.visualization.arrayToDataTable([
-                ["Element", "Density", {
-                  role: "style"
-                }],
+                ["Element", "Density", { role: "style" }],
                 ["Número de cárceles atendidas", <?= $prisiones_atendidas; ?>, "#2E86C1"],
                 ["Número de grupos Intramuros atendidos", <?= $grupos_intramuros ?>, "#239B56"],
                 ["Número de grupos extramuros atendidos", <?= $grupos_extramuros; ?>, "#F39C12"],
-                ["Total de creyentes que asistieron a los grupos", <?= $total_creyente; ?>, "#E74C3C"],
+                ["Creyentes Asistentes", <?= $total_creyente; ?>, "#E74C3C"],
                 ["Total de discípulos (LPP) que pasan a C&M", <?= $total_discipulos; ?>, "#8E44AD"],
                 ["Número de bautizados", <?= $bautizados; ?>, "#F1C40F"],
                 ["Número de voluntarios internos", <?= $discipulado; ?>, "#C0392B"],
@@ -808,6 +806,8 @@ $nombreGrafica = "CONSOLIDADOS CONFRATERNIDAD CARCELARIA DE COLOMBIA";
             </div>
           </div>
           <?php
+          echo $_SESSION['perfil'].'<br>';
+          echo $sqlFiltro;
           $sql = "SELECT SUM(sat_reportes.asistencia_total) AS total_poblacion,SUM(sat_reportes.asistencia_hom) AS prns_invitados, SUM(sat_reportes.asistencia_muj) AS prns_iniciaron, SUM(sat_reportes.asistencia_jov) AS cursos_act, SUM(sat_reportes.asistencia_nin) AS prns_graduados, SUM(sat_reportes.bautizados) AS internos, SUM(sat_reportes.desiciones) AS externos, SUM(sat_reportes.bautizados + sat_reportes.desiciones) AS voluntarios, SUM(sat_reportes.rep_ndis) AS discipulos FROM sat_reportes";
           $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
                         LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
@@ -815,6 +815,7 @@ $nombreGrafica = "CONSOLIDADOS CONFRATERNIDAD CARCELARIA DE COLOMBIA";
                         LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
                         LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
           $sql .= " WHERE 1 AND sat_reportes.rep_tip = 319 " . $sqlFiltro . "";
+          //echo $sql;
           $PSN1->query($sql);
           $num = $PSN1->num_rows();
           if ($num > 0) {
@@ -1278,7 +1279,7 @@ $nombreGrafica = "CONSOLIDADOS CONFRATERNIDAD CARCELARIA DE COLOMBIA";
                 <select id="anio" name="anio">
                   <!-- <option value="">Año</option> -->
                   <?php
-                  for ($i = 2000; $i <= date("Y"); $i++) {
+                  for ($i = 2020; $i <= date("Y"); $i++) {
                     echo '<option value="' . $i . '">' . $i . '</option>';
                   }
                   ?>
