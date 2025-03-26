@@ -233,7 +233,7 @@ $pdf->SetFont('Arial', 'B', 16);
 $pdf->SetTextColor($colorTitulo[0], $colorTitulo[1], $colorTitulo[2]);
 $pdf->SetXY(30, 45);
 
-$titulo = iconv('UTF-8', 'windows-1252', "Estadísticas del Programa 2024");
+$titulo = iconv('UTF-8', 'windows-1252', "Estadísticas del Programa");
 $pdf->Cell(0, 10, $titulo, 0, 1);
 
 // Línea divisoria
