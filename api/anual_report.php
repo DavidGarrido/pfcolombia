@@ -22,7 +22,11 @@ if ($anio <= 0 || empty($proyecto)) {
 $filtroAnio = " AND YEAR(fechaReporte) = " . $anio;
 $sqlFiltro = "";
 
-
+$sqlUser = "";
+if ($_SESSION["perfil"] == 163) {
+  $buscar_idUsuario = soloNumeros($_SESSION["id"]);
+  $sqlUser .= "sat_reportes.idUsuario = '" . $buscar_idUsuario . "' AND ";
+}
 if ($_SESSION["perfil"] == 167) {
   if ($_SESSION["id_zona"] != "" && $_SESSION["id_zona"] != 0) {
     $sqlFiltro .= " AND C.idSec = '" . $_SESSION["id_zona"] . "'";
@@ -184,81 +188,161 @@ switch ($proyecto) {
     }
     $data['filtro'] = $sqlFiltro;
     break;
-  case 'otro':
-    $sql = "SELECT SUM(sat_reportes.asistencia_total) AS total_poblacion,SUM(sat_reportes.asistencia_hom) AS prns_invitados, SUM(sat_reportes.asistencia_muj) AS prns_iniciaron, SUM(sat_reportes.asistencia_jov) AS cursos_act, SUM(sat_reportes.asistencia_nin) AS prns_graduados, SUM(sat_reportes.bautizados) AS internos, SUM(sat_reportes.desiciones) AS externos, SUM(sat_reportes.bautizados + sat_reportes.desiciones) AS voluntarios, SUM(sat_reportes.rep_ndis) AS discipulos FROM sat_reportes";
+  case 'lpp':
+    $datos = array();
+    //
+    $sql = "SELECT SUM(sat_reportes.asistencia_total) AS total_poblacion,SUM(sat_reportes.asistencia_hom) AS prns_invitados, SUM(sat_reportes.asistencia_muj) AS prns_iniciaron,SUM(sat_reportes.asistencia_jov) AS cursos_act, SUM(sat_reportes.asistencia_nin) AS prns_graduados, SUM(sat_reportes.bautizados) AS internos, SUM(sat_reportes.desiciones) AS externos, SUM(sat_reportes.bautizados + sat_reportes.desiciones) AS voluntarios, SUM(sat_reportes.rep_ndis) AS discipulos FROM sat_reportes";
     $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
-            LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
-            LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
-            LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
-            LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
-    // Agregar filtro de año aquí
-    $sql .= " WHERE 1 AND sat_reportes.rep_tip = 319 AND YEAR(sat_reportes.fechaReporte) = " . intval($anio) . " " . $sqlFiltro . "";
-    $PSN1->query($sql);
-    $num = $PSN1->num_rows();
+                        LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
+                        LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
+                        LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
+                        LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
+    $sql .= " WHERE " . $sqlUser . " 1 AND sat_reportes.rep_tip = 307 " . $sqlFiltro . "";
+    $datosArr[] = '["Tipo", "Cantidad"]';
+    $datosArr2[] = '["Tipo", "Cantidad"]';
+    //
+    $PSN->query($sql);
+    //echo $sql;
+    $num = $PSN->num_rows();
     if ($num > 0) {
-      while ($PSN1->next_record()) {
+      while ($PSN->next_record()) {
+        //$total_poblacion = intval($PSN->f('total_poblacion'));
         $data = [
-          'total_poblacion' => intval($PSN1->f('total_poblacion')),
-          'prns_invitados' => intval($PSN1->f('prns_invitados')),
-          'prns_iniciaron' => intval($PSN1->f('prns_iniciaron')),
-          'cursos_act' => intval($PSN1->f('cursos_act')),
-          'prns_graduados' => intval($PSN1->f('prns_graduados')),
-          'internos' => intval($PSN1->f('internos')),
-          'externos' => intval($PSN1->f('externos')),
-          'voluntarios' => intval($PSN1->f('voluntarios')),
-          'discipulos' => intval($PSN1->f('discipulos'))
+          'prns_invitados' => intval($PSN->f('prns_invitados')),
+          'prns_iniciaron' => intval($PSN->f('prns_iniciaron')),
+          'cursos_act' => intval($PSN->f('cursos_act')),
+          'prns_graduados' => intval($PSN->f('prns_graduados')),
+          'invt_internos' => intval($PSN->f('internos')),
+          'invt_externos' => intval($PSN->f('externos')),
+          'voluntarios' => intval($PSN->f('voluntarios')),
+          'discipulos' => intval($PSN->f('discipulos')),
         ];
       }
     } else {
-      $data = ['error' => 'No se encontraron registros para el año ' . $anio];
+      $varError = 1;
     }
+
+    $data['sql'] = $sql;
     $sql = "SELECT count(sat_reportes.id) AS total_prisiones FROM sat_reportes";
     $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
-            LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
-            LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
-            LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
-            LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
-    // Agregar filtro de año aquí
-    $sql .= " WHERE 1 AND sat_reportes.rep_tip = 319 AND YEAR(sat_reportes.fechaReporte) = " . intval($anio) . " " . $sqlFiltro . " GROUP BY sat_reportes.sitioReunion";
+                        LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
+                        LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
+                        LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
+                        LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
+    $sql .= " WHERE " . $sqlUser . " 1 AND sat_reportes.rep_tip = 307 " . $sqlFiltro . " GROUP BY sat_reportes.sitioReunion";
+    //
 
-    $PSN1->query($sql);
-    $total_prisiones = $PSN1->num_rows();
-    $data['total_prisiones'] = $PSN1->f('total_prisiones');
+    $PSN->query($sql);
+    //echo $sql;
+    $data['total_prisiones'] = $PSN->num_rows();
+    $sql = "SELECT sat_reportes.asistencia_total AS total_poblacion
+                            FROM sat_reportes ";
+    $sql .= "LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
+    $sql .= " WHERE 1 AND sat_reportes.rep_tip = 307 " . $sqlFiltro . " 
+      ORDER BY sat_reportes.fechaReporte";
+    //GROUP BY RU.reub_id 
 
-    $total_nivel = array();
-    for ($i = 320; $i < 323; $i++) {
-      $sql = "SELECT COUNT(AD.adj_can) nivel FROM tbl_adjuntos AS AD 
-            LEFT JOIN sat_reportes ON AD.adj_rep_fk = sat_reportes.id
-            LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
-            LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = U.id 
-            LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
-            LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
-            LEFT JOIN categorias AS CA ON CA.id = C.idSec";
-      // Agregar filtro de año aquí
-      $sql .= " WHERE AD.adj_can = '" . $i . "' AND sat_reportes.rep_tip = 319 AND YEAR(sat_reportes.fechaReporte) = " . intval($anio) . " " . $sqlFiltro . " ORDER BY sat_reportes.fechaReporte";
-      $PSN4->query($sql);
-      $num = $PSN4->num_rows();
-      if ($num > 0) {
-        while ($PSN4->next_record()) {
-          $total_nivel[$i] = $PSN4->f('nivel');
-        }
+    $sql = "SELECT sat_reportes.asistencia_total AS total_poblacion
+                            FROM sat_reportes ";
+    $sql .= "LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
+    $sql .= " WHERE 1 AND sat_reportes.rep_tip = 307 " . $sqlFiltro . " 
+          GROUP BY RU.reub_id 
+          ORDER BY sat_reportes.fechaReporte";
+    $data['sql2'] = $sql;
+    $PSN->query($sql);
+    //echo $sql;
+    $num = $PSN->num_rows();
+    $data['num'] = $PSN->num_rows();
+    $data['total_poblacion'] = 0;
+    if ($num > 0) {
+      while ($PSN->next_record()) {
+        $data['total_poblacion'] += intval($PSN->f('total_poblacion'));
       }
     }
-    $data['total_nivel'] = $total_nivel;
-    // Dentro del case 'evangelistas':
-    // $data = ['message' => 'Consulta para el proyecto Evangelistas no está implementada aún.'];
-    break;
-
-  case 'lpp':
-    $data = ['message' => 'Consulta para el proyecto LPP no está implementada aún.'];
+    $data['filtro'] = $sqlFiltro;
+    $data['perfil'] = $_SESSION['perfil'];
+    // $data = ['message' => 'Consulta para el proyecto LPP no está implementada aún.'];
     break;
 
   case 'cm':
-    $data = ['message' => 'Consulta para el proyecto C&M no está implementada aún.'];
+    $sql = "SELECT 
+                        SUM(asistencia_total) as asistencia_total,
+                        SUM(discipulado) as discipulado,
+                        SUM(desiciones) as decisiones,
+                        SUM(bautizadosPeriodo) as bautizos,
+                        SUM(graduadosPeriodo) as graduados,
+                        COUNT(sat_reportes.id) as total_grupos";
+    $sql .= " FROM sat_reportes ";
+    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
+                        LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
+                        LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
+                        LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
+                        LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
+    $sql .= " WHERE " . $sqlUser . " sat_reportes.rep_tip = 308 " . $sqlFiltro . "";
+    $PSN->query($sql);
+    $num = $PSN->num_rows();
+    if ($num > 0) {
+      while ($PSN->next_record()) {
+        $data = [
+          'satura_asistencia_total' => intval($PSN->f('asistencia_total')),
+          'satura_discipulado' => intval($PSN->f('discipulado')),
+          'satura_decisiones' => intval($PSN->f('decisiones')),
+          'satura_bautizos' => intval($PSN->f('bautizos')),
+          'satura_graduados' => intval($PSN->f('graduados')),
+          'satura_total_grupos' => intval($PSN->f('total_grupos')),
+        ];
+      }
+    }
+    $data['sql'] = $sql;
+
     break;
 
   case 'instituto-biblico':
-    $data = ['message' => 'Consulta para el proyecto Instituto Bíblico no está implementada aún.'];
+    $sql = "SELECT SUM(sat_reportes.asistencia_total) AS total_poblacion,SUM(sat_reportes.asistencia_hom) AS prns_invitados, SUM(sat_reportes.asistencia_muj) AS prns_iniciaron, SUM(sat_reportes.asistencia_jov) AS cursos_act, SUM(sat_reportes.asistencia_nin) AS prns_graduados, SUM(sat_reportes.bautizados) AS internos, SUM(sat_reportes.desiciones) AS externos, SUM(sat_reportes.bautizados + sat_reportes.desiciones) AS voluntarios, SUM(sat_reportes.rep_ndis) AS discipulos FROM sat_reportes";
+    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
+                        LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
+                        LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
+                        LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
+                        LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
+    $sql .= " WHERE 1 AND sat_reportes.rep_tip = 317 " . $sqlFiltro . "";
+    //
+
+    $PSN->query($sql);
+    //echo $sql;
+    $num = $PSN->num_rows();
+    if ($num > 0) {
+      while ($PSN->next_record()) {
+        $data = [
+          'total_poblacion' => intval($PSN->f('total_poblacion')),
+          'prns_invitados' => intval($PSN->f('prns_invitados')),
+          'prns_iniciaron' => intval($PSN->f('prns_iniciaron')),
+          'cursos_act' => intval($PSN->f('cursos_act')),
+          'prns_graduados' => intval($PSN->f('prns_graduados')),
+          'invt_internos' => intval($PSN->f('internos')),
+          'invt_externos' => intval($PSN->f('externos')),
+          'voluntarios' => intval($PSN->f('voluntarios')),
+          'discipulos' => intval($PSN->f('discipulos')),
+        ];
+      }
+    } else {
+      $varError = 1;
+    }
+
+    $data['sql1'] = $sql;
+    $sql = "SELECT count(sat_reportes.id) AS total_prisiones FROM sat_reportes";
+    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
+                        LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
+                        LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
+                        LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
+                        LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
+    $sql .= " WHERE 1 AND sat_reportes.rep_tip = 317 " . $sqlFiltro . " GROUP BY sat_reportes.sitioReunion";
+    $PSN1->query($sql);
+    //echo $sql;
+
+    $total_prisiones = $PSN1->num_rows();
+    $data['total_prisiones'] = $PSN1->num_rows();
+    $data['sql2'] = $sql;
+
     break;
 
   default:

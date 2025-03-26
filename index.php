@@ -495,6 +495,7 @@ if (isset($_GET["excelX"])) {
                       $sqlMenu = "SELECT menu.*";
                       $sqlMenu .= " FROM menu, usuarios_menu WHERE menu.id =  usuarios_menu.idMenu AND  usuarios_menu.idUsuario = " . $_SESSION["id"];
                       $sqlMenu .= " AND menu.estado = 1 ORDER BY principal, orden asc";
+                      //echo $sqlMenu;
                       $PSNMenu->query($sqlMenu);
                       if ($PSNMenu->num_rows() > 0) {
                         $principal_old = 0;
@@ -502,127 +503,131 @@ if (isset($_GET["excelX"])) {
                           if ($principal_old != $PSNMenu->f("principal")) {
                             if ($principal_old != 0) {
                       ?></ul>
-                  </li><?php
+                  </li>
+                <?php
                             }
                             $principal_old = $PSNMenu->f("principal");
-
-
-                            //
-                        ?><li class="dropdown">
-                  <a class="dropdown-toggle" data-toggle="dropdown" href="#"><?php
-                                                                              switch ($PSNMenu->f("principal")) {
-                                                                                case 1:
-                                                                                  echo "<i class='fas fa-sliders-h'></i> Configuración";
-                                                                                  break;
-                                                                                case 2:
-                                                                                  echo "SMS + Emailing";
-                                                                                  break;
-                                                                                case 3:
-                                                                                  echo "Cotizaciones";
-                                                                                  break;
-                                                                                case 4:
-                                                                                  echo "<i class='fas fa-file-invoice'></i> Reportes y programas";
-                                                                                  break;
-                                                                                case 5:
-                                                                                  echo "Evangelistas";
-                                                                                  break;
-                                                                                case 6:
-                                                                                  echo "LPP";
-                                                                                  break;
-                                                                                case 7:
-                                                                                  echo "C&M";
-                                                                                  break;
-                                                                                case 8:
-                                                                                  echo "Proyecto Felipe";
-                                                                                  break;
-                                                                                case 9:
-                                                                                  echo "Instituto Biblico";
-                                                                                  break;
-                                                                                case 99:
-                                                                                  echo "<i class='fas fa-user'></i> Mi cuenta";
-                                                                                  break;
-                                                                                default:
-                                                                                  echo "Otras opciones";
-                                                                                  break;
-                                                                              }
-                                                                              ?><span class="caret"></span></a>
+                ?>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <?php
+                            switch ($PSNMenu->f("principal")) {
+                              case 1:
+                                echo "<i class='fas fa-sliders-h'></i> Configuración";
+                                break;
+                              case 2:
+                                echo "SMS + Emailing";
+                                break;
+                              case 3:
+                                echo "Cotizaciones";
+                                break;
+                              case 4:
+                                echo "<i class='fas fa-file-invoice'></i> Reportes y programas";
+                                break;
+                              case 5:
+                                echo "Evangelistas";
+                                break;
+                              case 6:
+                                echo "LPP";
+                                break;
+                              case 7:
+                                echo "C&M";
+                                break;
+                              case 8:
+                                echo "Proyecto Felipe";
+                                break;
+                              case 9:
+                                echo "Instituto Biblico";
+                                break;
+                              case 99:
+                                echo "<i class='fas fa-user'></i> Mi cuenta";
+                                break;
+                              default:
+                                echo "Otras opciones";
+                                break;
+                            }
+                    ?>
+                    <span class="caret"></span></a>
                   <ul class="dropdown-menu"><?php
                                           }
+                                            ?>
+                  <li>
+                    <?php ?>
+                    <a href="
+                          <?php
+                          if ($PSNMenu->f("directo") == 1) {
+                            echo $PSNMenu->f("php");
+                          } else {
+                          ?>index.php?doc=<?= $PSNMenu->f("php"); ?><?php
+                                                                  }
+                                                                  if ($PSNMenu->f("opc") > 0) {
+                                                                    ?>&opc=<?php
+                                                                                                                echo $PSNMenu->f("opc");
+                                                                                                              }
+                                                                                                              //  Extra
+                                                                                                              if ($PSNMenu->f("extra") != "") {
+                                                                                                                ?>&<?php
+                                                                                                                    echo $PSNMenu->f("extra");
+                                                                                                                  }
+                                                                                                                    ?>" title="<?= $PSNMenu->f("nombre"); ?>" <?php
+                                                                                                                                                              if ($PSNMenu->f("directo") == 1) {
+                                                                                                                                                              ?> target="_blank" <?php
+                                                                                                                                                                                } else {
+                                                                                                                                                                                  ?> target="_self" <?php
+                                                                                                                                                                                                  }
+                                                                                                                                                                                                    ?>><?= $PSNMenu->f("imagen"); ?> <?= $PSNMenu->f("nombre"); ?></a><?php
 
+                                                                                                                                                                                                                                                                      ?>
+                  </li><?php
+                        }
 
-
-                                            ?><li><?php
-                                                  ?><a href="<?php
-                                                              if ($PSNMenu->f("directo") == 1) {
-                                                                echo $PSNMenu->f("php");
-                                                              } else {
-                                                              ?>index.php?doc=<?= $PSNMenu->f("php"); ?><?php
-                                                                                                      }
-                                                                                                      if ($PSNMenu->f("opc") > 0) {
-                                                                                                        ?>&opc=<?php
-                                                                                                        echo $PSNMenu->f("opc");
-                                                                                                      }
-                                                                                                      //  Extra
-                                                                                                      if ($PSNMenu->f("extra") != "") {
-                                                                                            ?>&<?php
-                                                                                                        echo $PSNMenu->f("extra");
-                                                                                                      }
-                                                                                          ?>" title="<?= $PSNMenu->f("nombre"); ?>" <?php
-                                                                                                                                if ($PSNMenu->f("directo") == 1) {
-                                                                                                                                ?> target="_blank" <?php
-                                                                                                                                } else {
-                                                                                                          ?> target="_self" <?php
-                                                                                                                                }
-                                                                                                                    ?>><?= $PSNMenu->f("imagen"); ?> <?= $PSNMenu->f("nombre"); ?></a><?php
-
-                                                                                                                                                                              ?></li><?php
-                                                                                                                                              }
-
-                                                                                                                                              if ($principal_old != 0) {
-                                                                                                                                                ?></ul>
+                        if ($principal_old != 0) {
+                        ?>
+                  </ul>
                 </li><?php
-                                                                                                                                              }
-                                                                                                                                            }
-                                                                                                                                            //
-                                                                                                                                            /*
+                        }
+                      }
+                      //
+                      /*
                 *   MENU GRAPHS
                 */
-                                                                                                                                            //echo "Menu: ".$temp_menu_graphs;
-                                                                                                                                            //
-                                                                                                                                            if ($_SESSION["menu_graphs"] == 1) {
-                                                                                                                                              $PSNMenu2 = new DBbase_Sql;
-                                                                                                                                              $sqlMenu = "SELECT menu_graphs.*";
-                                                                                                                                              $sqlMenu .= " FROM menu_graphs, usuarios_menu_graphs WHERE menu_graphs.estado = 1 AND menu_graphs.id =  usuarios_menu_graphs.idMenu AND  usuarios_menu_graphs.idUsuario = " . $_SESSION["id"];
-                                                                                                                                              $sqlMenu .= " ORDER BY principal, orden asc";
-                                                                                                                                              $PSNMenu2->query($sqlMenu);
-                                                                                                                                              if ($PSNMenu2->num_rows() > 0) {
+                      //echo "Menu: ".$temp_menu_graphs;
+                      //
+                      if ($_SESSION["menu_graphs"] == 1) {
+                        $PSNMenu2 = new DBbase_Sql;
+                        $sqlMenu = "SELECT menu_graphs.*";
+                        $sqlMenu .= " FROM menu_graphs, usuarios_menu_graphs WHERE menu_graphs.estado = 1 AND menu_graphs.id =  usuarios_menu_graphs.idMenu AND  usuarios_menu_graphs.idUsuario = " . $_SESSION["id"];
+                        $sqlMenu .= " ORDER BY principal, orden asc";
+                        //echo $sqlMenu;
+                        $PSNMenu2->query($sqlMenu);
+                        if ($PSNMenu2->num_rows() > 0) {
                       ?><li class="dropdown">
                   <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fas fa-chart-pie"></i> Gráficas<span class="caret"></span></a>
                   <ul class="dropdown-menu"><?php
-                                                                                                                                                while ($PSNMenu2->next_record()) {
+                                            while ($PSNMenu2->next_record()) {
                                             ?><li><?php
                                                   ?><a href="index.php?doc=<?= $PSNMenu2->f("php"); ?><?php
-                                                                                                                                                  if ($PSNMenu2->f("opc") > 0) {
+                                                                                                      if ($PSNMenu2->f("opc") > 0) {
                                                                                                       ?>&opc=<?php
-                                                                                                                                                    echo $PSNMenu2->f("opc");
-                                                                                                                                                  }
-                                                                                                                                                  //  Extra
-                                                                                                                                                  if ($PSNMenu2->f("extra") != "") {
+                                                                                                              echo $PSNMenu2->f("opc");
+                                                                                                            }
+                                                                                                            //  Extra
+                                                                                                            if ($PSNMenu2->f("extra") != "") {
                                                                                                               ?>&<?php
-                                                                                                                                                    echo $PSNMenu2->f("extra");
-                                                                                                                                                  }
-                                                                                                  ?>" target="_self" title="<?= $PSNMenu2->f("nombre"); ?>"><?= $PSNMenu2->f("imagen"); ?> <?= $PSNMenu2->f("nombre"); ?></a><?php
+                                                                                                                  echo $PSNMenu2->f("extra");
+                                                                                                                }
+                                                                                                                  ?>" target="_self" title="<?= $PSNMenu2->f("nombre"); ?>"><?= $PSNMenu2->f("imagen"); ?> <?= $PSNMenu2->f("nombre"); ?></a><?php
 
-                                                                                                                                                                                                                        ?></li><?php
-                                                                                                                                                                                  }
-                                                                                                                                                                                    ?></ul>
+                                                                                                                                                                                                                                              ?></li><?php
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                      ?></ul>
                 </li><?php
-                                                                                                                                              }
-                                                                                                                                            }   //FIN MENU GRAPHS            
+                        }
+                      }   //FIN MENU GRAPHS            
 
-                                                                                                                                          }
+                    }
 
-                                                                                                                                          /*if($_SESSION["drive"] != ""){?>  
+                    /*if($_SESSION["drive"] != ""){?>  
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fab fa-google-drive"></i> Materiales CCC<span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -632,7 +637,7 @@ if (isset($_GET["excelX"])) {
             <?php
         }*/
 
-                                                                                                                                          /*if($_SESSION["perfil"] == 2 || $_SESSION["perfil"] == 161){
+                    /*if($_SESSION["perfil"] == 2 || $_SESSION["perfil"] == 161){
             ?><li><a href="index.php?doc=videos" target="_self" title="Graficas"><img  src="images/png/sms-message.png" border="0" height="10px" align="left" /> Video tutorial</a></li><?
         }*/
                       ?>

@@ -411,7 +411,8 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
     $sql .= $sqlFiltro." ORDER BY sat_reportes.id DESC";
     //
     $PSN1->query($sql);
-    //echo $sql;
+
+    echo $PSN1->num_rows();
     if($PSN1->num_rows() > 0){
         if($PSN1->next_record()){
             $total_registros = $PSN1->f('conteo');

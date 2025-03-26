@@ -1,0 +1,142 @@
+/* Estilos del formulario */
+.formulario {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 10px;
+  align-items: center;
+}
+h2.title{
+  text-align:center;
+  margin:1em auto;
+}
+.formulario label {
+  font-weight: bold;
+  text-align: left;
+}
+
+.formulario input {
+  padding: 10px;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 100%;
+}
+
+/* Ajuste de checkboxes en fila */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Estilos de botones */
+.btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  grid-column: span 2;
+}
+
+.btn:hover {
+  background: #0056b3;
+}
+
+/* Estilos del reporte */
+.reporte {
+  margin-top: 20px;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+#datos-reporte {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+}
+
+/* Checkbox personalizado */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  user-select: none;
+  gap: 10px;
+}
+
+.custom-checkbox input {
+  display: none;
+}
+
+.custom-checkbox .checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.custom-checkbox:hover .checkmark {
+  background-color: rgba(0, 123, 255, 0.2);
+}
+
+.custom-checkbox .checkmark::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.custom-checkbox input:checked+.checkmark {
+  background-color: #007bff;
+  border-color: #0056b3;
+}
+
+.custom-checkbox input:checked+.checkmark::after {
+  opacity: 1;
+}
+
+/* Media Query para pantallas pequeñas */
+@media (max-width: 600px) {
+  .formulario {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .btn {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 600px) {
+  .formulario{
+    width:50%;
+    margin: 0px auto;
+  }
+}

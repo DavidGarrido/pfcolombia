@@ -124,6 +124,128 @@ document.addEventListener("DOMContentLoaded", function() {
             chart.draw(view, options);
           });
         }
+        if (proyecto === "lpp") {
+
+          // Cargar la librería de Google Charts
+          google.charts.load("current", { packages: ["corechart"] });
+          google.charts.setOnLoadCallback(function() {
+            // Crear la DataTable con los datos retornados por la API
+            var chartData = google.visualization.arrayToDataTable([
+              ["Elemento", "Valor", { role: "style" }],
+              ["Total de la población de la prisión", data.total_poblacion, "#2E86C1"],
+              ["N° Prisioneros invitados", data.prns_invitados, "#239B56"],
+              ["N° Prisioneros que iniciaron el curso", data.prns_iniciaron, "#F39C12"],
+              ["N° de cursos", data.cursos_act, "#F1C40F"],
+              ["N° de graduados", data.prns_graduados, "#C0392B"],
+              ["N° de voluntarios que atendieron el curso", data.voluntarios, "#E74C3C"],
+              ["N° de discípulos que pasan a C&M", data.discipulos, "#8E44AD"]
+            ]);
+
+            // Crear una vista para añadir anotaciones
+            var view = new google.visualization.DataView(chartData);
+            view.setColumns([
+              0, 1,
+              {
+                calc: "stringify",
+                sourceColumn: 1,
+                type: "string",
+                role: "annotation"
+              },
+              2
+            ]);
+
+            // Opciones de la gráfica
+            var options = {
+              bar: { groupWidth: "95%" },
+              legend: { position: "none" },
+              // Puedes ajustar otras opciones según necesites
+            };
+
+            // Dibujar la gráfica en el div con id "GraficaReporte"
+            var chart = new google.visualization.BarChart(document.getElementById("GraficaReporte"));
+            chart.draw(view, options);
+          });
+        }
+        if (proyecto === "cm") {
+
+          // Cargar la librería de Google Charts
+          google.charts.load("current", { packages: ["corechart"] });
+          google.charts.setOnLoadCallback(function() {
+            // Crear la DataTable con los datos retornados por la API
+            var chartData = google.visualization.arrayToDataTable([
+              ["Elemento", "Valor", { role: "style" }],
+              ["Total de asistencia en grupos", data.satura_asistencia_total, "#2E86C1"],
+              ["Total de discipulados", data.satura_discipulado, "#239B56"],
+              ["Total de decisiones", data.satura_decisiones, "#F39C12"],
+              ["Total de bautizados", data.satura_bautizos, "#E74C3C"],
+              ["Total de graduados", data.satura_graduados, "#E74C3C"],
+              ["Total de grupos", data.satura_total_grupos, "#8E44AD"]
+            ]);
+
+            // Crear una vista para añadir anotaciones
+            var view = new google.visualization.DataView(chartData);
+            view.setColumns([
+              0, 1,
+              {
+                calc: "stringify",
+                sourceColumn: 1,
+                type: "string",
+                role: "annotation"
+              },
+              2
+            ]);
+
+            // Opciones de la gráfica
+            var options = {
+              bar: { groupWidth: "95%" },
+              legend: { position: "none" },
+              // Puedes ajustar otras opciones según necesites
+            };
+
+            // Dibujar la gráfica en el div con id "GraficaReporte"
+            var chart = new google.visualization.BarChart(document.getElementById("GraficaReporte"));
+            chart.draw(view, options);
+          });
+        }
+        if (proyecto === "instituto-biblico") {
+
+          // Cargar la librería de Google Charts
+          google.charts.load("current", { packages: ["corechart"] });
+          google.charts.setOnLoadCallback(function() {
+            // Crear la DataTable con los datos retornados por la API
+            var chartData = google.visualization.arrayToDataTable([
+              ["Elemento", "Valor", { role: "style" }],
+              ["Número de prisioneros invitados al diplomado", data.total_poblacion, "#239B56"],
+              ["Número de prisioneros inscritos en el diplomado", data.prns_invitados, "#F39C12"],
+              ["Número de prisioneros que iniciaron el diplomado", data.prns_iniciaron, "#F1C40F"],
+              ["Número de prisioneros graduados", data.prns_graduados, "#C0392B"]
+            ]);
+
+            // Crear una vista para añadir anotaciones
+            var view = new google.visualization.DataView(chartData);
+            view.setColumns([
+              0, 1,
+              {
+                calc: "stringify",
+                sourceColumn: 1,
+                type: "string",
+                role: "annotation"
+              },
+              2
+            ]);
+
+            // Opciones de la gráfica
+            var options = {
+              bar: { groupWidth: "95%" },
+              legend: { position: "none" },
+              // Puedes ajustar otras opciones según necesites
+            };
+
+            // Dibujar la gráfica en el div con id "GraficaReporte"
+            var chart = new google.visualization.BarChart(document.getElementById("GraficaReporte"));
+            chart.draw(view, options);
+          });
+        }
       })
       .catch(error => {
         console.error("Error en la petición:", error);

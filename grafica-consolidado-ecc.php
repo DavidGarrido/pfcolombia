@@ -161,6 +161,7 @@ $datos = array();
 $sql = "SELECT 
 SUM(asistencia_total) as asistencia_total,
 SUM(discipulado) as discipulado,
+SUM(graduadosPeriodo) as graduados,
 SUM(desiciones) as decisiones,
 SUM(bautizadosPeriodo) as bautizos,
 SUM(number_person_without_freedom) as familias_privadas,
@@ -180,6 +181,7 @@ if($num > 0){
 	while($PSN->next_record()){
         $satura_asistencia_total = $PSN->f('asistencia_total');
         $satura_discipulado = $PSN->f('discipulado');
+        $satura_graduados = $PSN->f('graduados');
         $satura_decisiones = $PSN->f('decisiones');
         $satura_bautizos = $PSN->f('bautizos');
         $satura_total_grupos = $PSN->f('total_grupos');
@@ -631,6 +633,21 @@ if($varError != 1){
                     </div>
                 </div>
             </div>
+            <div class="resu-item bck-col-2">
+                <div class="item-ico">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="item-con">
+                    <div class="item-text">
+                        <h3>Total</h3>
+                        <p>de Graduados</p>
+                    </div>
+                    <div class="item-num">
+                        <span><?=$satura_graduados; ?></span>
+                    </div>
+                </div>
+            </div>
+
             <div class="resu-item bck-col-2">
                 <div class="item-ico">
                     <i class="fas fa-users"></i>
