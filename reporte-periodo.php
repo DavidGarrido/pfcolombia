@@ -19,7 +19,7 @@
     <label for="lideres">Líderes Internos:</label>
     <input type="number" id="lideres" required>
 
-    <label for="voluntarios">Voluntarios Nacionales:</label>
+    <label for="voluntarios">Voluntarios a nivel nacional en evangelismo y discipulado:</label>
     <input type="number" id="voluntarios" required>
 
     <label for="pospenados">Pospenados Atendidos:</label>

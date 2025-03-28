@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let fechaFinFormateada = formatearFecha(fechaFin);
 
     // Enviar petición a la API
-    fetch("api/report.php", {
+    fetch("https://pfcolombia.co/api/report.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return response.json(); // Si es JSON, manejar como JSON
       })
       .then(data => {
+        console.log(data);
         if (data.error) {
           alert("Error: " + data.error);
           return;

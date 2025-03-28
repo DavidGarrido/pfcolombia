@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/../vendor/autoload.php';
 
 use setasign\Fpdi\Fpdi;
@@ -252,7 +253,7 @@ $datos = [
   iconv('UTF-8', 'windows-1252', "Iglesias en los patios") => $iglesias,
   iconv('UTF-8', 'windows-1252', "PPL bautizadas") => $satura_bautizos,
   iconv('UTF-8', 'windows-1252', "Líderes internos") => $lideres,
-  iconv('UTF-8', 'windows-1252', "Voluntarios nacionales") => $voluntarios_nacionales,
+  iconv('UTF-8', 'windows-1252', "Voluntarios a nivel nacional en evangelismo y discipulado") => $voluntarios_nacionales,
   iconv('UTF-8', 'windows-1252', "Pospenados atendidos") => $pospenados,
 ];
 // Dividir datos en dos columnas

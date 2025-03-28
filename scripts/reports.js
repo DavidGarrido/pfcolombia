@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
     formData.append("anio", anio);
 
     // Enviar la petición a la API
-    fetch("/api/anual_report.php", {
+    fetch("https://pfcolombia.co/api/anual_report.php", {
       method: "POST",
       body: formData,
       credentials: "include"
