@@ -216,6 +216,18 @@ if (isset($_GET["excelX"])) {
   <title><?= $gloPrograma; ?> - <?= $gloEmpresa; ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="./images/favico.png" sizes="32x32">
+  
+  <!-- PWA Meta Tags para agregar a pantalla principal -->
+  <link rel="apple-touch-icon" href="icon.jpeg">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon.jpeg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="<?= $gloPrograma; ?>">
+  
+  <!-- Android Chrome -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#cc0000">
+  <link rel="icon" type="image/jpeg" sizes="192x192" href="icon.jpeg">
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <link rel="stylesheet" type="text/css" href="estilos_chart.css" />
   <!--<?php

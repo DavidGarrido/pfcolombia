@@ -37,48 +37,45 @@ if(!isset($_REQUEST["fechaFinal"]) || eliminarInvalidos($_REQUEST["fechaFinal"])
 
 
     /*
-    *	TRAEMOS LOS registros.
+    *	TRAEMOS LOS registros - PATRÓN OPTIMIZADO DE reportar_buscar.php
     */
-    $sql = "SELECT count(DISTINCT sat_reportes.id) as conteo ";
-    $sql .= " FROM sat_reportes ";
-    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario
-    LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = U.id
-LEFT JOIN categorias AS C ON C.id = UE.empresa_pd 
-LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
-    $sql .= " WHERE 1 ";
-    //
+    
+    // Construir filtros una vez
+    $sqlFiltro = "";
     if($_SESSION["perfil"] == 163){
         $_REQUEST["idUsuario"] = $_SESSION["id"];
     }
-    //
+    
     if(isset($_REQUEST["idUsuario"]) && soloNumeros($_REQUEST["idUsuario"]) != ""){
         $buscar_idUsuario = soloNumeros($_REQUEST["idUsuario"]);
         $sqlFiltro .= " AND sat_reportes.idUsuario = '".$buscar_idUsuario."'";
     }
+    
+    // Para filtros de zona/regional, usar subconsulta más eficiente
     if ($_SESSION["id_zona"]!="" && $_SESSION["id_zona"]!=0) {
-        $sqlFiltro .= " AND C.idSec = '".$_SESSION["id_zona"]."'";
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT UE.idUsuario FROM usuario_empresa UE LEFT JOIN categorias C ON C.id = UE.empresa_pd WHERE C.idSec = '".$_SESSION["id_zona"]."')";
         $_REQUEST["empresa_sitio_cor"] = $_SESSION["id_zona"];
         $buscar_zona = $_SESSION["id_zona"];
     }
     if(isset($_REQUEST["empresa_sitio_cor"]) && soloNumeros($_REQUEST["empresa_sitio_cor"]) != ""){
         $buscar_zona = soloNumeros($_REQUEST["empresa_sitio_cor"]);
-        $sqlFiltro .= " AND C.idSec = '".$buscar_zona."'";
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT UE.idUsuario FROM usuario_empresa UE LEFT JOIN categorias C ON C.id = UE.empresa_pd WHERE C.idSec = '".$buscar_zona."')";
     }
     
     if(isset($_REQUEST["empresa_pd"]) && soloNumeros($_REQUEST["empresa_pd"]) != ""){
         $buscar_regional = soloNumeros($_REQUEST["empresa_pd"]);
-        $sqlFiltro .= " AND UE.empresa_pd = '".$buscar_regional."'";
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT idUsuario FROM usuario_empresa WHERE empresa_pd = '".$buscar_regional."')";
     }else if ($_SESSION["empresa_pd"]!="" && $_SESSION["empresa_pd"]!=0) {
         $buscar_regional = soloNumeros($_SESSION["empresa_pd"]);
-        $sqlFiltro .= " AND UE.empresa_pd = '".$_SESSION["empresa_pd"]."'";
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT idUsuario FROM usuario_empresa WHERE empresa_pd = '".$_SESSION["empresa_pd"]."')";
         $_REQUEST["empresa_pd"] = $_SESSION["empresa_pd"];
     }
+    
     if(isset($_REQUEST["sitioReunion"]) && soloNumeros($_REQUEST["sitioReunion"]) != ""){
         $buscar_prision = soloNumeros($_REQUEST["sitioReunion"]);
         $sqlFiltro .= " AND sat_reportes.sitioReunion = ".$buscar_prision."";
     }
     
-    //
     if(isset($_REQUEST["rep_inex"]) && eliminarInvalidos($_REQUEST["rep_inex"]) != ""){
         $tipo = eliminarInvalidos($_REQUEST["rep_inex"]);
         if ($tipo == 2) {
@@ -93,41 +90,55 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
         $fechaInicial = eliminarInvalidos($_REQUEST["fechaInicial"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte >= '".$fechaInicial."'";
     }
-    //
+    
     if(isset($_REQUEST["fechaFinal"]) && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
         $fechaFinal = eliminarInvalidos($_REQUEST["fechaFinal"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte <= '".$fechaFinal."'";
-    }    
+    }
     
-    //    
-    $sql .= $sqlFiltro." AND sat_reportes.rep_tip = 318 ORDER BY sat_reportes.id DESC";
-    //
+    // Conteo optimizado - consulta simple sin JOINs
+    $sql = "SELECT count(DISTINCT sat_reportes.id) as conteo FROM sat_reportes WHERE 1 ".$sqlFiltro." AND sat_reportes.rep_tip = 318";
     $PSN1->query($sql);
-    //echo $sql;
+    $total_registros = 0;
     if($PSN1->num_rows() > 0){
         if($PSN1->next_record()){
             $total_registros = $PSN1->f('conteo');
         }
     }
-    $total_paginas = ceil($total_registros / $registros); 
-
-    $sql = "SELECT C.descripcion AS regional, sat_reportes.*, U.nombre as nombreUsuario, sat_grupos.nombre as nombreGrupo, tbl_adjuntos.adj_url 
-    FROM sat_reportes ";
-    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
-LEFT JOIN sat_grupos ON sat_grupos.id = sat_reportes.idGrupoMadre
-LEFT JOIN tbl_adjuntos ON sat_reportes.id = tbl_adjuntos.adj_rep_fk 
-LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = U.id
-LEFT JOIN categorias AS C ON C.id = UE.empresa_pd
-LEFT JOIN categorias AS CA ON CA.id = C.idSec";
-    //
-    $sql.=" WHERE 1 ".$sqlFiltro." AND sat_reportes.rep_tip = 318 GROUP BY sat_reportes.id ORDER BY fechaReporte DESC";
-    $sql.= " LIMIT ".$inicio.", ".$registros;
-    //
+    $total_paginas = ceil($total_registros / $registros);
     
-    $PSN1->query($sql);
-    //echo $sql;
-    //$total_registros=$PSN1->num_rows();
-    //$total_paginas = ceil($total_registros / $registros);
+    // Paso 1: Obtener solo los IDs necesarios para la paginación (RÁPIDO)
+    $sql_ids = "SELECT sat_reportes.id FROM sat_reportes WHERE 1 ".$sqlFiltro." AND sat_reportes.rep_tip = 318 ORDER BY sat_reportes.id DESC LIMIT ".$inicio.", ".$registros;
+    $PSN_ids = new DBbase_Sql;
+    $PSN_ids->query($sql_ids);
+    $report_ids = [];
+    while($PSN_ids->next_record()){
+        $report_ids[] = $PSN_ids->f('id');
+    } 
+
+    // Paso 2: Solo si hay IDs, obtener los datos completos (RÁPIDO porque son pocos registros)
+    if (count($report_ids) > 0) {
+        $sql = "SELECT C.descripcion AS regional, sat_reportes.*, U.nombre as nombreUsuario, sat_grupos.nombre as nombreGrupo, tbl_adjuntos.adj_url,
+        RU.reub_nom as prision_nombre, RU.reub_dir as prision_direccion,
+        M.municipio, LOWER(D.departamento) AS departamento
+        FROM sat_reportes 
+        LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
+        LEFT JOIN sat_grupos ON sat_grupos.id = sat_reportes.idGrupoMadre
+        LEFT JOIN tbl_adjuntos ON sat_reportes.id = tbl_adjuntos.adj_rep_fk 
+        LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = U.id
+        LEFT JOIN categorias AS C ON C.id = UE.empresa_pd
+        LEFT JOIN categorias AS CA ON CA.id = C.idSec
+        LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion
+        LEFT JOIN dane_municipios AS M ON M.id_municipio = CASE WHEN sat_reportes.sitioReunion = 0 THEN sat_reportes.ciudad ELSE RU.reub_mun_fk END
+        LEFT JOIN dane_departamentos AS D ON D.id_departamento = M.departamento_id
+        WHERE sat_reportes.id IN (" . implode(',', $report_ids) . ") 
+        ORDER BY sat_reportes.fechaReporte DESC";
+        
+        $PSN1->query($sql);
+    } else {
+        // No hay registros para mostrar
+        $total_registros = 0;
+    }
 
     ?><div class="container">
 
@@ -189,8 +200,7 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec";
                         }
                     }
                     
-                    $PSN2->query($sql); 
-                    echo $sql;
+                    $PSN2->query($sql);
                     $numero=$PSN2->num_rows();
                     if($numero > 0){
                         while($PSN2->next_record()){?>
@@ -363,45 +373,24 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec";
                             $iglesias_reconocidas = $PSN1->f("iglesias_reconocidas");  
                             
                             ?><tr class='clickable-row' data-href='index.php?doc=gestionar-sub-programa-evangelistas&id=<?=$id; ?>' >
-                                <!--<td><a href="index.php?doc=gestionar-sub-programa-evangelistas&id=<?=$id; ?>"><?=str_pad($id, 6, "0", STR_PAD_LEFT); ?></a></td>//-->
-                                <?php if($sitioReunion != 0){
-                                        $sql = "SELECT LOWER(D.departamento) AS departamento, M.municipio, C.descripcion AS regional, RU.reub_nom,RU.reub_dir ";
-                                        $sql.=" FROM tbl_regional_ubicacion AS RU
-                                        LEFT JOIN dane_municipios AS M ON M.id_municipio = RU.reub_mun_fk
-                                        LEFT JOIN dane_departamentos AS D ON D.id_departamento = M.departamento_id
-                                        LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk
-                                         WHERE RU.reub_id = ".$sitioReunion;
-
-                                        $PSN2->query($sql);
-                                        $numero=$PSN2->num_rows();
-                                        if($numero > 0){
-                                            while($PSN2->next_record()){
-                                                $departamento = $PSN2->f("departamento");
-                                                $municipio = $PSN2->f("municipio");
-                                                $regional = $PSN2->f("regional");
-                                                $prision = $PSN2->f("reub_nom");
-                                            }
-                                        }
-                                        
-                                        
-                                    }else{
-                                        $sql = "SELECT M.municipio,LOWER(D.departamento) AS departamento ";
-                                        $sql.=" FROM dane_municipios AS M
-                                        LEFT JOIN dane_departamentos AS D ON D.id_departamento = M.departamento_id
-                                         WHERE M.id_municipio = ".$ciudad;
-
-                                        $PSN2->query($sql);
-                                        $numero=$PSN2->num_rows();
-                                        if($numero > 0){
-                                            while($PSN2->next_record()){
-                                                $regional = $PSN2->f("departamento");
-                                                $prision = $PSN2->f("municipio");
-                                            }
-                                        }
-                                        
-                                    }?>
-                                <td><?=$PSN1->f("regional"); ?></td>
-                                <td><?=$asistencia_total;?></td>
+                                <?php 
+                                // Los datos geográficos ya vienen de la consulta principal
+                                $regional = $PSN1->f("regional");
+                                $departamento = $PSN1->f("departamento");
+                                $municipio = $PSN1->f("municipio");
+                                $prision_nombre = $PSN1->f("prision_nombre");
+                                
+                                if($sitioReunion != 0){
+                                    $prision = $prision_nombre ? $prision_nombre : 'Sin nombre';
+                                } else {
+                                    $prision = $municipio ? $municipio : 'Sin municipio';
+                                    if(!$regional && $departamento) {
+                                        $regional = $departamento;
+                                    }
+                                }
+                                ?>
+                                <td><?=$regional; ?></td>
+                                <td><?=$prision; ?></td>
                                 <td><a href="index.php?doc=gestionar-sub-programa-evangelistas&id=<?=$id; ?>"><?=$nombreUsuario; ?></a></td>
                                 <td><?=$asistencia_hom; ?></td>
                                 <td><?=$asistencia_muj; ?></td>
