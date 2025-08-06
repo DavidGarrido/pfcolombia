@@ -279,7 +279,8 @@ else{
                 SUM(sat_reportes.desiciones) as desiciones,
                 SUM(sat_reportes.preparandose) as preparandose,
                 SUM(sat_reportes.iglesias_reconocidas) as iglesias_reconocidas,
-                SUM(sat_reportes.bautizados) as bautizados,
+                SUM(sat_reportes.graduados) as graduados,
+                SUM(sat_reportes.graduadosPeriodo) as graduadosPeriodo,
                 U.nombre as nombreUsuario,
                 UE.empresa_sitio,
                 UE.empresa_rm,
@@ -540,6 +541,9 @@ else{
                     <th>Bautizados este período</th>
                 <th>En Discipulado</th>
                     <th>Lideres capacitandose</th>
+                <th>Graduados</th>
+                <th>Graduados período</th>
+                <th>Cursos de graduación</th>
                 <th>Iglesias Reconocidas</th>
             </tr>
         </thead>
@@ -606,7 +610,44 @@ else{
                     $discipulado  = $PSN1->f("discipulado");
                     $desiciones  = $PSN1->f("desiciones");
                     $preparandose  = $PSN1->f("preparandose");
-                    $iglesias_reconocidas = $PSN1->f("iglesias_reconocidas");  
+                    $graduados  = $PSN1->f("graduados");
+                    $graduadosPeriodo  = $PSN1->f("graduadosPeriodo");
+                    $iglesias_reconocidas = $PSN1->f("iglesias_reconocidas");
+                    
+                    // Obtener cursos de graduación para este facilitador
+                    $cursosGraduacion = "";
+                    $sql_cursos = "SELECT DISTINCT C.descripcion 
+                                  FROM tbl_adjuntos AS A 
+                                  LEFT JOIN categorias AS C ON C.id = A.adj_curso 
+                                  LEFT JOIN sat_reportes AS S ON S.id = A.adj_rep_fk 
+                                  WHERE S.idUsuario = '".$idUsuario."'";
+                    if(isset($_REQUEST["fechaInicial"]) && eliminarInvalidos($_REQUEST["fechaInicial"]) != ""){
+                        $sql_cursos .= " AND A.adj_fec >= '".$fechaInicial."'";
+                    }
+                    if(isset($_REQUEST["fechaFinal"]) && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
+                        $sql_cursos .= " AND A.adj_fec <= '".$fechaFinal."'";
+                    }
+                    $sql_cursos .= " ORDER BY C.descripcion ASC";
+                    
+                    $PSN3->query($sql_cursos);
+                    $cursos_array = array();
+                    if($PSN3->num_rows() > 0){
+                        while($PSN3->next_record()){
+                            $curso_desc = $PSN3->f('descripcion');
+                            if($curso_desc != "" && $curso_desc != null){
+                                $cursos_array[] = $curso_desc;
+                            } else {
+                                $cursos_array[] = "No especificado";
+                            }
+                        }
+                    }
+                    if(empty($cursos_array) && ($graduados > 0 || $graduadosPeriodo > 0)){
+                        $cursosGraduacion = "No especificado";
+                    } else if(!empty($cursos_array)) {
+                        $cursosGraduacion = implode(", ", array_unique($cursos_array));
+                    } else {
+                        $cursosGraduacion = "-";
+                    }  
                     
                     $lideresCapacitandose = 0;                        
                     
@@ -640,6 +681,9 @@ else{
                             <td align="center"><?=$bautizadosPeriodo; ?></td>
                         <td align="center"><?=$discipulado; ?></td>
                             <td align="center"><?=$lideresCapacitandose; ?></td>
+                        <td align="center"><?=$graduados; ?></td>
+                        <td align="center"><?=$graduadosPeriodo; ?></td>
+                        <td><?=$cursosGraduacion; ?></td>
                         <td align="center"><?=$iglesias_reconocidas; ?></td>
                     </tr>
                     <?php

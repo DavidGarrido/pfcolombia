@@ -345,15 +345,10 @@ else{
 
 
     /*
-    *	TRAEMOS LOS registros.
+    *	TRAEMOS LOS registros - PATRÓN OPTIMIZADO
     */
-    $sql = "SELECT count(DISTINCT sat_reportes.id) as conteo ";
-    $sql .= " FROM sat_reportes ";
-    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario
-    LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = U.id
-LEFT JOIN categorias AS C ON C.id = UE.empresa_pd 
-LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
-    $sql .= " WHERE 1 ";
+    // Construir filtros una vez
+    $sqlFiltro = "";
     //
     if($_SESSION["perfil"] == 163){
         $_REQUEST["idUsuario"] = $_SESSION["id"];
@@ -363,22 +358,23 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
         $buscar_idUsuario = soloNumeros($_REQUEST["idUsuario"]);
         $sqlFiltro .= " AND sat_reportes.idUsuario = '".$buscar_idUsuario."'";
     }
+    // Optimizar filtros de zona/regional con subconsultas
     if ($_SESSION["id_zona"]!="" && $_SESSION["id_zona"]!=0) {
-        $sqlFiltro .= " AND C.idSec = '".$_SESSION["id_zona"]."'";
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT UE.idUsuario FROM usuario_empresa UE LEFT JOIN categorias C ON C.id = UE.empresa_pd WHERE C.idSec = '".$_SESSION["id_zona"]."')";
         $_REQUEST["empresa_sitio_cor"] = $_SESSION["id_zona"];
         $buscar_zona = $_SESSION["id_zona"];
     }
     if(isset($_REQUEST["empresa_sitio_cor"]) && soloNumeros($_REQUEST["empresa_sitio_cor"]) != ""){
         $buscar_zona = soloNumeros($_REQUEST["empresa_sitio_cor"]);
-        $sqlFiltro .= " AND C.idSec = '".$buscar_zona."'";
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT UE.idUsuario FROM usuario_empresa UE LEFT JOIN categorias C ON C.id = UE.empresa_pd WHERE C.idSec = '".$buscar_zona."')";
     }
     
     if(isset($_REQUEST["empresa_pd"]) && soloNumeros($_REQUEST["empresa_pd"]) != ""){
         $buscar_regional = soloNumeros($_REQUEST["empresa_pd"]);
-        $sqlFiltro .= " AND UE.empresa_pd = '".$buscar_regional."'";
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT idUsuario FROM usuario_empresa WHERE empresa_pd = '".$buscar_regional."')";
     }else if ($_SESSION["empresa_pd"]!="" && $_SESSION["empresa_pd"]!=0) {
         $buscar_regional = soloNumeros($_SESSION["empresa_pd"]);
-        $sqlFiltro .= " AND UE.empresa_pd = '".$_SESSION["empresa_pd"]."'";
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT idUsuario FROM usuario_empresa WHERE empresa_pd = '".$_SESSION["empresa_pd"]."')";
         $_REQUEST["empresa_pd"] = $_SESSION["empresa_pd"];
     }
     if(isset($_REQUEST["sitioReunion"]) && soloNumeros($_REQUEST["sitioReunion"]) != ""){
@@ -407,37 +403,44 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
         $sqlFiltro .= " AND sat_reportes.fechaReporte <= '".$fechaFinal."'";
     }    
     
-    //    
-    $sql .= $sqlFiltro." ORDER BY sat_reportes.id DESC";
-    //
+    // Conteo optimizado - consulta simple
+    $sql = "SELECT count(DISTINCT sat_reportes.id) as conteo FROM sat_reportes WHERE sat_reportes.rep_tip = 308 ".$sqlFiltro;
     $PSN1->query($sql);
-
-    echo $PSN1->num_rows();
+    $total_registros = 0;
     if($PSN1->num_rows() > 0){
         if($PSN1->next_record()){
             $total_registros = $PSN1->f('conteo');
         }
     }
-    //$total_paginas = ceil($total_registros / $registros); 
-
-    $sql = "SELECT C.descripcion AS regional, sat_reportes.*, U.nombre as nombreUsuario, sat_grupos.nombre as nombreGrupo, tbl_adjuntos.adj_url 
-    FROM sat_reportes ";
-    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
-LEFT JOIN sat_grupos ON sat_grupos.id = sat_reportes.idGrupoMadre
-LEFT JOIN tbl_adjuntos ON sat_reportes.id = tbl_adjuntos.adj_rep_fk 
-LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = U.id
-LEFT JOIN categorias AS C ON C.id = UE.empresa_pd
-LEFT JOIN categorias AS CA ON CA.id = C.idSec";
-    //
-    $sql.=" WHERE 1 ".$sqlFiltro." AND sat_reportes.rep_tip = 308 GROUP BY sat_reportes.id ORDER BY fechaReporte DESC";
-    $sql.= " LIMIT ".$inicio.", ".$registros;
-  
-    //
-    
-    $PSN1->query($sql);
-    //echo $sql;
-    $total_registros=$PSN1->num_rows();
     $total_paginas = ceil($total_registros / $registros);
+    
+    // Paso 1: Obtener solo los IDs necesarios para la página (RÁPIDO)
+    $sql_ids = "SELECT sat_reportes.id FROM sat_reportes WHERE sat_reportes.rep_tip = 308 ".$sqlFiltro." ORDER BY sat_reportes.id DESC LIMIT ".$inicio.", ".$registros;
+    $PSN_ids = new DBbase_Sql;
+    $PSN_ids->query($sql_ids);
+    $report_ids = [];
+    while($PSN_ids->next_record()){
+        $report_ids[] = $PSN_ids->f('id');
+    } 
+
+    // Paso 2: Solo si hay IDs, obtener los datos completos (RÁPIDO)
+    if (count($report_ids) > 0) {
+        $sql = "SELECT C.descripcion AS regional, sat_reportes.*, U.nombre as nombreUsuario, sat_grupos.nombre as nombreGrupo, tbl_adjuntos.adj_url 
+        FROM sat_reportes 
+        LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
+        LEFT JOIN sat_grupos ON sat_grupos.id = sat_reportes.idGrupoMadre
+        LEFT JOIN tbl_adjuntos ON sat_reportes.id = tbl_adjuntos.adj_rep_fk 
+        LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = U.id
+        LEFT JOIN categorias AS C ON C.id = UE.empresa_pd
+        LEFT JOIN categorias AS CA ON CA.id = C.idSec 
+        WHERE sat_reportes.id IN (" . implode(',', $report_ids) . ") 
+        ORDER BY sat_reportes.fechaReporte DESC";
+        
+        $PSN1->query($sql);
+    } else {
+        // No hay registros para mostrar
+        $total_registros = 0;
+    }
 
     ?><div class="container">
 

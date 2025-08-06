@@ -372,18 +372,20 @@ if(isset($_POST["funcion"])){
                 $act_bau_imgG = $_FILES["act_bau_imgG"];
                 $act_bau_fecG = $_REQUEST['act_bau_fecG'];
                 $act_bau_canG = $_REQUEST['act_bau_canG'];
+                $act_bau_curG = $_REQUEST['act_bau_curG'];
     
                 $sql = 'INSERT INTO tbl_adjuntos (
                     adj_nom,
                     adj_url,
                     adj_fec,
-                    adj_can, 
+                    adj_can,
+                    adj_curso,
                     adj_rep_fk)';
                 $sql .= 'VALUES';
                 
                 for ($i=0; $i < sizeof($act_bau_fecG); $i++) { 
                     $tp_arch = extension_archivo($act_bau_imgG['name'][$i]);
-                    $sql .= "('".$act_bau_imgG['name'][$i]."','archivos/evi_".$ultimoId."_".$i.".".$tp_arch."','".$act_bau_fecG[$i]."',".$act_bau_canG[$i].",".$ultimoId."),";
+                    $sql .= "('".$act_bau_imgG['name'][$i]."','archivos/evi_".$ultimoId."_".$i.".".$tp_arch."','".$act_bau_fecG[$i]."',".$act_bau_canG[$i].",".$act_bau_curG[$i].",".$ultimoId."),";
                     $extArchivo = $tp_arch;
                     if($extArchivo == "png" || $extArchivo == "jpg" || $extArchivo == "jpeg" || $extArchivo == "gif"){
                         $rutaOr = $act_bau_imgG['tmp_name'][$i];
@@ -2656,8 +2658,28 @@ else if($idReporteActual == 0){
                                 <input name="act_bau_fecG[]" type="date" id="act_bau_fecG" class="act_bau_fecG form-control" />
                             </td>
                             <td class="col-sm-3">
-                                <strong>Cantidad graduados:</strong>
+                                <strong style="white-space: nowrap;">Cantidad graduados:</strong>
                                 <input name="act_bau_canG[]" type="number" id="act_bau_canG" min="0" class="act_bau_canG subtotalG form-control" />
+                            </td>
+                            <td class="col-sm-4">
+                                <strong style="white-space: nowrap;">Curso de graduación:</strong>
+                                <select name="act_bau_curG[]" id="act_bau_curG" class="act_bau_curG form-control">
+                                    <?php
+                                        $sql = "SELECT * ";
+                                        $sql.=" FROM categorias AS C";
+                                        $sql.=" WHERE C.idSec = 88 ";
+                                        $sql.=" ORDER BY C.descripcion ASC";
+                                        $PSN1->query($sql);
+                                        $numero_cat=$PSN1->num_rows();
+                                        if($numero_cat > 0){
+                                            while($PSN1->next_record()){
+                                                ?><option value="<?=$PSN1->f('id'); ?>">
+                                                    <?=$PSN1->f('descripcion'); ?></option>
+                                                <?php 
+                                            }
+                                        }
+                                        ?>
+                                </select>
                             </td>
                             <td class="eliminarAddG"><br><button type="button" class="btn btn-cir-uno usua-col"><i class="fa fa-times"></i></button></td>
                         </tr>
