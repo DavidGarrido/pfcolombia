@@ -49,6 +49,14 @@ if(isset($_REQUEST["id"]) && $_REQUEST["id"] != ""){
     $idReporteActual = 0;
 }
 
+// Control de permisos para edición de reportes - Solo Manuel y Danny pueden editar
+$usuarios_autorizados_edicion = array(1, 231); // Manuel José Obando (ID: 1) y Danny Hernandez (ID: 231)
+$puede_editar_reporte = false;
+if (isset($_SESSION["id"]) && in_array($_SESSION["id"], $usuarios_autorizados_edicion)) {
+    $puede_editar_reporte = true;
+}
+$readonly_attr = $puede_editar_reporte ? '' : 'readonly';
+
 
 // Array que nos servira para ir llevando cuenta de los requerimientos.
 $arrayRequerimientos = array();
@@ -118,6 +126,13 @@ if(isset($_POST["funcion"])){
         
 		$nombre_archivo = $_FILES['archivo2']['name'];
 		$archivo2 = extension_archivo($nombre_archivo);
+		
+		// Validar extensiones permitidas para testimonio
+		$extensiones_permitidas_testimonio = array('docx', 'odt', 'pdf', 'doc');
+		if (!empty($nombre_archivo) && !in_array(strtolower($archivo2), $extensiones_permitidas_testimonio)) {
+			$error_datos = 1;
+			$error_mensaje = "El testimonio solo acepta archivos: " . implode(', ', array_map('strtoupper', $extensiones_permitidas_testimonio));
+		}
         
 		$nombre_archivo = $_FILES['archivo3']['name'];
 		$archivo3 = extension_archivo($nombre_archivo);
@@ -521,6 +536,13 @@ if(isset($_POST["funcion"])){
         
 		$nombre_archivo = $_FILES['archivo2']['name'];
 		$archivo2 = extension_archivo($nombre_archivo);
+		
+		// Validar extensiones permitidas para testimonio
+		$extensiones_permitidas_testimonio = array('docx', 'odt', 'pdf', 'doc');
+		if (!empty($nombre_archivo) && !in_array(strtolower($archivo2), $extensiones_permitidas_testimonio)) {
+			$error_datos = 1;
+			$error_mensaje = "El testimonio solo acepta archivos: " . implode(', ', array_map('strtoupper', $extensiones_permitidas_testimonio));
+		}
         
 		$nombre_archivo = $_FILES['archivo3']['name'];
 		$archivo3 = extension_archivo($nombre_archivo);
@@ -759,7 +781,7 @@ if(isset($_POST["funcion"])){
 
 switch($error_datos){
     case 1:
-        $texto_error = "Datos requeridos.";
+        $texto_error = isset($error_mensaje) ? $error_mensaje : "Datos requeridos.";
         break;
     case 2:
         $texto_error = "Error no especificado.";
@@ -926,6 +948,11 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec";
             }
             
             ?> DE <?=$temp_letrero; ?></h3>
+            <?php if (!$puede_editar_reporte && $idReporteActual > 0) { ?>
+                <div class="alert alert-warning text-center" style="margin: 10px 0;">
+                    <strong>⚠️ Solo los usuarios autorizados pueden editar reportes.</strong>
+                </div>
+            <?php } ?>
             <?php //if ($_SESSION["perfil"] == 162 || $_SESSION["perfil"] == 2){ ?>
             <div class="cont-btn cont-flex fl-sbet">
                 <div class="item-btn">
@@ -1658,7 +1685,8 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec";
                 <div class="col-sm-6">
                     <strong>Testimonio:</strong>
                     <a href="archivos/evi_<?=$idReporteActual ?>_2.<?= $ext2?>">Archivo adjunto</a>
-                    <input name="archivo2" type="file" id="archivo2" required class="form-control" />
+                    <input name="archivo2" type="file" id="archivo2" required class="form-control" accept=".docx,.doc,.odt,.pdf" />
+                    <div id="archivo2-nombre" class="file-name-display" style="margin-top: 5px; color: #666; font-size: 14px;"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
@@ -1700,7 +1728,7 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec";
                     <div class="col-sm-3"></div>
                 </div>
             </div>
-        <?php }  if ($_SESSION['perfil']!="168") {?>
+        <?php }  if ($_SESSION['perfil']!="168" && $puede_editar_reporte) {?>
             <div class="cont-btn cont-flex fl-sbet">
                 <div class="item-btn">
                     <input type="button" onClick="window.location.href='index.php?doc=reportar_buscar'" name="previous" class="previous btn btn-info" value="Cerrar" />
@@ -2757,7 +2785,8 @@ else if($idReporteActual == 0){
                 <div class="col-sm-3"></div>
                 <div class="col-sm-6">
                     <strong>Testimonio:</strong>
-                    <input name="archivo2" type="file" id="archivo2" required class="form-control" />
+                    <input name="archivo2" type="file" id="archivo2" required class="form-control" accept=".docx,.doc,.odt,.pdf" />
+                    <div id="archivo2-nombre" class="file-name-display" style="margin-top: 5px; color: #666; font-size: 14px;"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
@@ -3344,4 +3373,27 @@ else{
             }
         })
     }
+</script>
+<script type="text/javascript">
+    // Mostrar nombre del archivo seleccionado para testimonios
+    document.addEventListener('DOMContentLoaded', function() {
+        // Para todos los inputs de archivo2 (testimonio)
+        const fileInputs = document.querySelectorAll('input[name="archivo2"]');
+        
+        fileInputs.forEach(function(input) {
+            input.addEventListener('change', function() {
+                const displayDiv = document.getElementById('archivo2-nombre');
+                if (displayDiv) {
+                    if (this.files && this.files.length > 0) {
+                        const fileName = this.files[0].name;
+                        const fileSize = (this.files[0].size / 1024).toFixed(1) + ' KB';
+                        displayDiv.innerHTML = '<strong>Archivo seleccionado:</strong> ' + fileName + ' (' + fileSize + ')';
+                        displayDiv.style.color = '#28a745';
+                    } else {
+                        displayDiv.innerHTML = '';
+                    }
+                }
+            });
+        });
+    });
 </script>

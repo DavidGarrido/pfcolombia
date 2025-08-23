@@ -1,4 +1,6 @@
-en gestioar subprograma ecc limitar los testimonio a docx y a la extension que descarga google docs 
-mostrar los archivos cargados en el selector de archivos en testimonio.
-No permitir la modificacion de los reportes exepto don Manuel y Danny
-quitar las columnas de fotos en la tabla de reportes de c&m
+✅ COMPLETADO - en gestioar subprograma ecc limitar los testimonio a docx y a la extension que descarga google docs 
+✅ COMPLETADO - mostrar los archivos cargados en el selector de archivos en testimonio.
+✅ COMPLETADO - No permitir la modificacion de los reportes exepto don Manuel y Danny
+✅ COMPLETADO - quitar las columnas de fotos en la tabla de reportes de c&m
+
+🎉 TODAS LAS TAREAS COMPLETADAS EXITOSAMENTE 🎉

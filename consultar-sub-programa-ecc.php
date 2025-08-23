@@ -662,8 +662,8 @@ else{
                         <th width="30px"  title="Decisiones para cristo">Decisiones</th>
                         <th>Bautizos</th>
                         <th width="80px">Último ingreso</th>
-                        <th>Foto/Bautizo</th>
-                        <th>Foto/Grupo</th>
+                        <!--<th>Foto/Bautizo</th>
+                        <th>Foto/Grupo</th>-->
                     </tr>
                 </thead>
                 <tbody>
@@ -783,7 +783,7 @@ else{
                                     <i class="fas fa-thumbs-down ico-dli"></i><?php                            
                                 }
                                 ?></td>-->
-                                <td align="center"><?php
+                                <!--<td align="center"><?php
                                 if($url_baut != "" || $url_baut != null){
                                     ?><i class="fas fa-thumbs-up ico-lik"></i>
                                     <!--<img src="images/png/thumb-up.png" width="20px" />--><?php
@@ -793,13 +793,14 @@ else{
                                     <!--<img src="images/png/thumb-down.png" width="20px" />--><?php                            
                                 }
                                 ?></td>
+                                <!--
                                 <td align="center"><?php
                                 if($generacionNumero == 0 || $generacionNumero == 77 || $generacionNumero == 8){
                                     if($ext3 != ""){
-                                        ?><!--<img src="images/png/thumb-up.png" width="20px" />-->
+                                        ?><!--<img src="images/png/thumb-up.png" width="20px" />
                                         <i class="fas fa-thumbs-up ico-lik"></i><?php
                                     }else{
-                                        ?><!--<img src="images/png/thumb-down.png" width="20px" />-->
+                                        ?><!--<img src="images/png/thumb-down.png" width="20px" />
                                         <i class="fas fa-thumbs-down ico-dli"></i><?php                            
                                     }
                                 }
@@ -814,15 +815,16 @@ else{
                                             + $mapeo_bautizar
                                             + $mapeo_trabajadores;*/
                                     if($ext1 != "" || $ext2 != ""){
-                                        ?><!--<img src="images/png/thumb-up.png" width="20px" />-->
+                                        ?><!--<img src="images/png/thumb-up.png" width="20px" />
                                     <i class="fas fa-thumbs-up ico-lik"></i><?php
                                     }else{
-                                        ?><!--<img src="images/png/thumb-down.png" width="20px" />-->
+                                        ?><!--<img src="images/png/thumb-down.png" width="20px" />
                                         <i class="fas fa-thumbs-down ico-dli"></i>
                                     <?php                       
                                     }
                                 }
                                 ?></td>
+                                -->
                                 
                             </tr>
                             <?php
