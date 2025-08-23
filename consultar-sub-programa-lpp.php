@@ -439,6 +439,7 @@ else{
         LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario
         LEFT JOIN categorias AS CA ON CA.id = C.idSec 
         WHERE sat_reportes.id IN (" . implode(',', $report_ids) . ") 
+        GROUP BY sat_reportes.id
         ORDER BY sat_reportes.fechaReporte DESC";
         
         $PSN1->query($sql);

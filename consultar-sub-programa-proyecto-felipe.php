@@ -128,6 +128,7 @@ if(!isset($_REQUEST["fechaFinal"]) || eliminarInvalidos($_REQUEST["fechaFinal"])
         LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = U.id
         LEFT JOIN categorias AS C ON C.id = UE.empresa_pd
         WHERE sat_reportes.id IN (" . implode(',', $report_ids) . ") 
+        GROUP BY sat_reportes.id
         ORDER BY sat_reportes.fechaReporte DESC";
         
         $PSN1->query($sql);

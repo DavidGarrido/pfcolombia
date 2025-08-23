@@ -132,6 +132,7 @@ if(!isset($_REQUEST["fechaFinal"]) || eliminarInvalidos($_REQUEST["fechaFinal"])
         LEFT JOIN dane_municipios AS M ON M.id_municipio = CASE WHEN sat_reportes.sitioReunion = 0 THEN sat_reportes.ciudad ELSE RU.reub_mun_fk END
         LEFT JOIN dane_departamentos AS D ON D.id_departamento = M.departamento_id
         WHERE sat_reportes.id IN (" . implode(',', $report_ids) . ") 
+        GROUP BY sat_reportes.id
         ORDER BY sat_reportes.fechaReporte DESC";
         
         $PSN1->query($sql);
