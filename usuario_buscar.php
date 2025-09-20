@@ -68,7 +68,14 @@ switch($ctrl){
 */
 if(isset($_REQUEST["excelX"])){
     
-    if(isset($_REQUEST["tipo"]) && soloNumeros($_REQUEST["tipo"]) != ""){
+    // Inicializar variables de filtro
+    $sqlFiltro = "";
+    $buscar_nombre = "";
+    $buscar_identificacion = "";
+    $buscar_tipo = "";
+    $buscar_cliente = "";
+    
+    if(isset($_REQUEST["tipo"]) && soloNumeros($_REQUEST["tipo"]) != "" && soloNumeros($_REQUEST["tipo"]) != "0"){
         $buscar_tipo = soloNumeros($_REQUEST["tipo"]);
         $sqlFiltro .= " AND usuario.tipo = '".$buscar_tipo."'";
     }
@@ -385,6 +392,13 @@ else{
         $inicio = ($pagina - 1) * $registros; 
     }
 
+    // Inicializar variables de filtro
+    $buscar_nombre = "";
+    $buscar_identificacion = "";
+    $buscar_tipo = "";
+    $buscar_cliente = "";
+    $buscar_zona = "";
+    $buscar_regional = "";
 
     /*
     *	TRAEMOS LOS colegioS.
@@ -398,9 +412,9 @@ LEFT JOIN categorias AS C ON C.id = UE.empresa_pd
 LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
     $sql .= " WHERE usuario.id != 2 ";
     //
-    $sqlFiltro .= " AND usuario.tipo IN (".$temp_tiposUsuario.")";
+    $sqlFiltro = " AND usuario.tipo IN (".$temp_tiposUsuario.")";
 
-    if(isset($_REQUEST["tipo"]) && soloNumeros($_REQUEST["tipo"]) != ""){
+    if(isset($_REQUEST["tipo"]) && soloNumeros($_REQUEST["tipo"]) != "" && soloNumeros($_REQUEST["tipo"]) != "0"){
         $buscar_tipo = soloNumeros($_REQUEST["tipo"]);
         $sqlFiltro .= " AND usuario.tipo = '".$buscar_tipo."'";
     }
@@ -414,7 +428,7 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
         $buscar_identificacion = eliminarInvalidos($_REQUEST["identificacion"]);
         $sqlFiltro .= " AND usuario.identificacion LIKE '%".$buscar_identificacion."%'";
     }
-    if(isset($_REQUEST["empresa_sitio_cor"]) && soloNumeros($_REQUEST["empresa_sitio_cor"]) != ""){
+    if(isset($_REQUEST["empresa_sitio_cor"]) && soloNumeros($_REQUEST["empresa_sitio_cor"]) != "" && soloNumeros($_REQUEST["empresa_sitio_cor"]) != "0"){
         $buscar_zona = soloNumeros($_REQUEST["empresa_sitio_cor"]);
         $sqlFiltro .= " AND C.idSec = '".$buscar_zona."'";
     }
@@ -423,7 +437,7 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
         $buscar_cliente = eliminarInvalidos($_REQUEST["cliente"]);
         $sqlFiltro .= " AND cliente.id = '".$buscar_cliente."'";
     }
-    if(isset($_REQUEST["empresa_pd"]) && soloNumeros($_REQUEST["empresa_pd"]) != ""){
+    if(isset($_REQUEST["empresa_pd"]) && soloNumeros($_REQUEST["empresa_pd"]) != "" && soloNumeros($_REQUEST["empresa_pd"]) != "0"){
         $buscar_regional = soloNumeros($_REQUEST["empresa_pd"]);
         $sqlFiltro .= " AND UE.empresa_pd = '".$buscar_regional."'";
     }
@@ -469,7 +483,7 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
 
 
     $PSN1->query($sql);
-    //echo $sql;
+    echo "<!-- DEBUG SQL: " . $sql . " -->";
     $numero=$PSN1->num_rows();
 
     ?><div class="container">

@@ -527,7 +527,12 @@ if(isset($_POST["funcion"])){
         }else{
             $general_acceso = 1;
         }
-        $general_acceso_graphs = eliminarInvalidos($_POST["acceso_graphs"]);
+        
+        if (!empty($_POST["acceso_graphs"])) {
+            $general_acceso_graphs = eliminarInvalidos($_POST["acceso_graphs"]);
+        }else{
+            $general_acceso_graphs = 0;
+        }
         
         
         

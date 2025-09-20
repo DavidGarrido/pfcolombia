@@ -551,6 +551,9 @@ if (isset($_GET["excelX"])) {
                               case 9:
                                 echo "Instituto Biblico";
                                 break;
+                              case 10:
+                                echo "<i class='fas fa-chart-line'></i> Promedios";
+                                break;
                               case 99:
                                 echo "<i class='fas fa-user'></i> Mi cuenta";
                                 break;

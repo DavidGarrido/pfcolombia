@@ -34,50 +34,64 @@ if(!isset($_REQUEST["fechaFinal"]) || eliminarInvalidos($_REQUEST["fechaFinal"])
  /*
     *   TRAEMOS LOS registros.
     */
-    $sql = "SELECT count(DISTINCT sat_reportes.id) as conteo ";
-    $sql .= " FROM sat_reportes ";
-    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
-LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = U.id 
-LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion
-LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
-LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
-    $sql .= " WHERE sat_reportes.rep_tip = 317 ";
-    //
+    // Construir filtros una vez
+    $sqlFiltro = "";
+    
+    // Inicializar variables para evitar errores undefined
+    $buscar_idUsuario = "";
+    $buscar_zona = "";
+    $buscar_regional = "";
+    $buscar_prision = "";
+    $buscar_diplo = "";
+    $fechaInicial = "";
+    $fechaFinal = "";
+    
     if($_SESSION["perfil"] == 163){
         $_REQUEST["idUsuario"] = $_SESSION["id"];
     }
-    //
-    if(isset($_REQUEST["idUsuario"]) && soloNumeros($_REQUEST["idUsuario"]) != ""){
+    
+    if(isset($_REQUEST["idUsuario"]) && $_REQUEST["idUsuario"] != "" && soloNumeros($_REQUEST["idUsuario"]) != ""){
         $buscar_idUsuario = soloNumeros($_REQUEST["idUsuario"]);
         $sqlFiltro .= " AND sat_reportes.idUsuario = '".$buscar_idUsuario."'";
     }
 
-    if ($_SESSION["id_zona"]!="" && $_SESSION["id_zona"]!=0) {
-        $sqlFiltro .= " AND C.idSec = '".$_SESSION["id_zona"]."'";
+    // Optimizar filtros de zona/regional con subconsultas
+    // Priorizar parámetros de REQUEST sobre sesión, pero solo si no están vacíos
+    if(isset($_REQUEST["empresa_sitio_cor"]) && $_REQUEST["empresa_sitio_cor"] != "") {
+        $buscar_zona = soloNumeros($_REQUEST["empresa_sitio_cor"]);
+        if($buscar_zona != "") {
+            $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT UE.idUsuario FROM usuario_empresa UE LEFT JOIN categorias C ON C.id = UE.empresa_pd WHERE C.idSec = '".$buscar_zona."')";
+        }
+    } else if (!isset($_REQUEST["empresa_sitio_cor"]) && $_SESSION["id_zona"]!="" && $_SESSION["id_zona"]!=0) {
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT UE.idUsuario FROM usuario_empresa UE LEFT JOIN categorias C ON C.id = UE.empresa_pd WHERE C.idSec = '".$_SESSION["id_zona"]."')";
         $_REQUEST["empresa_sitio_cor"] = $_SESSION["id_zona"];
         $buscar_zona = $_SESSION["id_zona"];
     }
     
-    if(isset($_REQUEST["empresa_pd"]) && soloNumeros($_REQUEST["empresa_pd"]) != ""){
+    // Priorizar parámetros de REQUEST sobre sesión para empresa_pd, pero solo si no están vacíos
+    if(isset($_REQUEST["empresa_pd"]) && $_REQUEST["empresa_pd"] != "") {
         $buscar_regional = soloNumeros($_REQUEST["empresa_pd"]);
-        $sqlFiltro .= " AND RU.reub_reg_fk = '".$buscar_regional."'";
-    }else if ($_SESSION["empresa_pd"]!="" && $_SESSION["empresa_pd"]!=0) {
+        if($buscar_regional != "") {
+            $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT idUsuario FROM usuario_empresa WHERE empresa_pd = '".$buscar_regional."')";
+        }
+    } else if (!isset($_REQUEST["empresa_pd"]) && $_SESSION["empresa_pd"]!="" && $_SESSION["empresa_pd"]!=0) {
         $buscar_regional = soloNumeros($_SESSION["empresa_pd"]);
-        $sqlFiltro .= " AND RU.reub_reg_fk = '".$_SESSION["empresa_pd"]."'";
+        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT idUsuario FROM usuario_empresa WHERE empresa_pd = '".$_SESSION["empresa_pd"]."')";
         $_REQUEST["empresa_pd"] = $_SESSION["empresa_pd"];
     }
     
-    if(isset($_REQUEST["sitioReunion"]) && soloNumeros($_REQUEST["sitioReunion"]) != ""){
+    if(isset($_REQUEST["sitioReunion"]) && $_REQUEST["sitioReunion"] != "" && soloNumeros($_REQUEST["sitioReunion"]) != ""){
         $buscar_prision = soloNumeros($_REQUEST["sitioReunion"]);
         $sqlFiltro .= " AND sat_reportes.sitioReunion = ".$buscar_prision."";
+    } else {
+        $buscar_prision = isset($_REQUEST["sitioReunion"]) ? $_REQUEST["sitioReunion"] : "";
     }
-    if(isset($_REQUEST["empresa_sitio_cor"]) && soloNumeros($_REQUEST["empresa_sitio_cor"]) != ""){
-        $buscar_zona = soloNumeros($_REQUEST["empresa_sitio_cor"]);
-        $sqlFiltro .= " AND C.idSec = '".$buscar_zona."'";
-    }
-    if(isset($_REQUEST["rep_ndis"]) && soloNumeros($_REQUEST["rep_ndis"]) != ""){
+    
+    if(isset($_REQUEST["rep_ndis"]) && $_REQUEST["rep_ndis"] != "" && soloNumeros($_REQUEST["rep_ndis"]) != ""){
         $buscar_diplo = soloNumeros($_REQUEST["rep_ndis"]);
         $sqlFiltro .= " AND sat_reportes.rep_ndis = '".$buscar_diplo."'";
+    } else {
+        $buscar_diplo = isset($_REQUEST["rep_ndis"]) ? $_REQUEST["rep_ndis"] : "";
     }
     //
     if(isset($_REQUEST["rep_inex"]) && eliminarInvalidos($_REQUEST["rep_inex"]) != ""){
@@ -93,18 +107,23 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
     if(isset($_REQUEST["fechaInicial"]) && eliminarInvalidos($_REQUEST["fechaInicial"]) != ""){
         $fechaInicial = eliminarInvalidos($_REQUEST["fechaInicial"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte >= '".$fechaInicial."'";
+    } else {
+        $fechaInicial = isset($_REQUEST["fechaInicial"]) ? $_REQUEST["fechaInicial"] : "";
     }
-    //
+    
     if(isset($_REQUEST["fechaFinal"]) && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
         $fechaFinal = eliminarInvalidos($_REQUEST["fechaFinal"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte <= '".$fechaFinal."'";
-    }    
+    } else {
+        $fechaFinal = isset($_REQUEST["fechaFinal"]) ? $_REQUEST["fechaFinal"] : "";
+    }
     
-    //    
-    $sql .= $sqlFiltro." ORDER BY sat_reportes.id DESC";
+    // Conteo optimizado - consulta simple
+    $sql = "SELECT count(DISTINCT sat_reportes.id) as conteo FROM sat_reportes WHERE sat_reportes.rep_tip = 317 ".$sqlFiltro;
     //
     $PSN1->query($sql);
     //echo $sql;
+    $total_registros = 0;
     if($PSN1->num_rows() > 0)
     {
         if($PSN1->next_record())

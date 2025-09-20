@@ -1004,7 +1004,7 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec";
             </div>
             <div class="col-sm-3">
                 <strong>Entrenador:</strong>
-                <input name="entrenador" type="text" id="entrenador" maxlength="250" value="<?=$entrenador; ?>" class="form-control" required  />
+                <input name="entrenador" type="text" id="entrenador" maxlength="50" value="<?=$entrenador; ?>" class="form-control" required  />
             </div>
             
             <div class="col-sm-1"></div>
@@ -1013,7 +1013,7 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec";
             <div class="col-sm-1"></div>
             <div class="col-sm-3">
                 <strong>Siervo Facilitador:</strong>
-                <input name="plantador" type="text" id="plantador" maxlength="250" value="<?=$plantador; ?>" class="form-control" required  />
+                <input name="plantador" type="text" id="plantador" maxlength="255" value="<?=$plantador; ?>" class="form-control" required  />
             </div>
             <div class="col-sm-2">
                 <strong>Fecha del reporte:</strong>
@@ -1068,7 +1068,7 @@ LEFT JOIN categorias AS CA ON CA.id = C.idSec";
             <div id="ubicacion"></div>
             <div class="col-sm-1">
                 <strong>Patio/Pabellón:</strong></label>
-                <input name="pabellon" type="text" id="pabellon" maxlength="250" value="<?=$pabellon; ?>" class="form-control" required />
+                <input name="pabellon" type="text" id="pabellon" maxlength="255" value="<?=$pabellon; ?>" class="form-control" required />
             </div> 
         
         <?php }else{ ?>
@@ -2056,11 +2056,11 @@ else if($idReporteActual == 0){
             <div class="col-sm-1"></div>
             <div class="col-sm-3">
                 <strong>Entrenador:</strong>
-                <input name="entrenador" type="text" id="entrenador" maxlength="250" value="<?=$entrenador; ?>" class="form-control" required />
+                <input name="entrenador" type="text" id="entrenador" maxlength="50" value="<?=$entrenador; ?>" class="form-control" required />
             </div>
             <div class="col-sm-3">
                 <strong>Siervo Facilitador:</strong>
-                <input name="plantador" type="text" id="plantador" maxlength="250" value="<?=$plantador; ?>" class="form-control" required />
+                <input name="plantador" type="text" id="plantador" maxlength="255" value="<?=$plantador; ?>" class="form-control" required />
             </div>
             <div class="col-sm-4">
                 <strong>Cárcel ubicación:</strong>
@@ -2104,7 +2104,7 @@ else if($idReporteActual == 0){
             <div id="ubicacion"></div>
             <div class="col-sm-3">
                 <strong>Patio/Pabellón:</strong></label>
-                <input name="pabellon" type="text" id="pabellon" maxlength="250" value="<?=$pabellon; ?>" class="form-control" required />
+                <input name="pabellon" type="text" id="pabellon" maxlength="255" value="<?=$pabellon; ?>" class="form-control" required />
             </div> 
         </div>
 
@@ -2125,14 +2125,14 @@ else if($idReporteActual == 0){
                 </div>
                 <div class="col-sm-2">
                     <strong>Entrenador:</strong>
-                    <input name="entrenador" type="text" id="entrenador" maxlength="250" value="<?=$entrenador; ?>" class="form-control" required />
+                    <input name="entrenador" type="text" id="entrenador" maxlength="50" value="<?=$entrenador; ?>" class="form-control" required />
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-1"></div>
                 <div class="col-sm-3">
                     <strong>Siervo Facilitador:</strong>
-                    <input name="plantador" type="text" id="plantador" maxlength="250" value="<?=$plantador; ?>" class="form-control" required />
+                    <input name="plantador" type="text" id="plantador" maxlength="255" value="<?=$plantador; ?>" class="form-control" required />
                 </div>
                 <div class="col-sm-2">
                     <strong>Departamento</strong>
@@ -2885,19 +2885,19 @@ if($generacionActual == "CERO"){
             <div class="col-sm-1"></div>
             <div class="col-sm-2">
                 <strong>Hombres:</strong>
-                <input name="asistencia_hom" type="number" id="asistencia_hom" maxlength="255" min="0" value="<?=$_REQUEST['asistencia_hom']; ?>" class="form-control" onChange="sumar()" />
+                <input name="asistencia_hom" type="number" id="asistencia_hom" min="0" max="9999" value="<?=$_REQUEST['asistencia_hom']; ?>" class="form-control" onChange="sumar()" />
             </div>
             <div class="col-sm-2">
                 <strong>Mujeres:</strong>
-                <input name="asistencia_muj" type="number" id="asistencia_muj" maxlength="255" min="0" value="<?=$_REQUEST['asistencia_muj']; ?>" class="form-control" onChange="sumar()" />
+                <input name="asistencia_muj" type="number" id="asistencia_muj" min="0" max="9999" value="<?=$_REQUEST['asistencia_muj']; ?>" class="form-control" onChange="sumar()" />
             </div>
             <div class="col-sm-2">
                 <strong>Jóvenes:</strong>
-                <input name="asistencia_jov" type="number" id="asistencia_jov" maxlength="255" min="0" value="<?=$_REQUEST['asistencia_jov']; ?>" class="form-control" onChange="sumar()" />
+                <input name="asistencia_jov" type="number" id="asistencia_jov" min="0" max="9999" value="<?=$_REQUEST['asistencia_jov']; ?>" class="form-control" onChange="sumar()" />
             </div>
             <div class="col-sm-2">
                 <strong>Niños:</strong>
-                <input name="asistencia_nin" type="number" id="asistencia_nin" maxlength="255" min="0" value="<?=$_REQUEST['asistencia_nin']; ?>" class="form-control" onChange="sumar()" />
+                <input name="asistencia_nin" type="number" id="asistencia_nin" min="0" max="9999" value="<?=$_REQUEST['asistencia_nin']; ?>" class="form-control" onChange="sumar()" />
             </div>
             <div class="col-sm-2">
                 <strong><?php if($generacionNumero == 77 && $generacionNumero == 8){ echo "Alcanzados"; }else{ echo "Asistencia"; } ?> total:</strong>

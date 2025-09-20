@@ -1,6 +1,15 @@
-✅ COMPLETADO - en gestioar subprograma ecc limitar los testimonio a docx y a la extension que descarga google docs 
-✅ COMPLETADO - mostrar los archivos cargados en el selector de archivos en testimonio.
-✅ COMPLETADO - No permitir la modificacion de los reportes exepto don Manuel y Danny
-✅ COMPLETADO - quitar las columnas de fotos en la tabla de reportes de c&m
+### Pendientes del Sistema de Gestión ###
 
-🎉 TODAS LAS TAREAS COMPLETADAS EXITOSAMENTE 🎉
+**Promedios:**
+- Mostrar promedios consolidados por regionales.
+- Permitir filtrar promedios por regionales (además del filtro por usuario).
+
+**Capacitar y Multiplicar (C&M):**
+- Separar la cantidad de bautizos y graduados en la visualización.
+- Añadir el título "Graduados" sobre el cuadro correspondiente.
+
+**Reportes:**
+- ✅ Corregir el filtro por rango de fechas en todos los programas para que muestre los resultados correctamente.
+
+**Usuarios:**
+- Restaurar el acceso para consultar la lista de usuarios.

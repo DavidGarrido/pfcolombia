@@ -349,30 +349,43 @@ else{
     */
     // Construir filtros una vez
     $sqlFiltro = "";
-    //
+    
+    // Inicializar variables para evitar errores undefined
+    $buscar_idUsuario = "";
+    $buscar_zona = "";
+    $buscar_regional = "";
+    $buscar_prision = "";
+    $fechaInicial = "";
+    $fechaFinal = "";
+    
     if($_SESSION["perfil"] == 163){
         $_REQUEST["idUsuario"] = $_SESSION["id"];
     }
-    //
-    if(isset($_REQUEST["idUsuario"]) && soloNumeros($_REQUEST["idUsuario"]) != ""){
+    
+    if(isset($_REQUEST["idUsuario"]) && $_REQUEST["idUsuario"] != "" && soloNumeros($_REQUEST["idUsuario"]) != ""){
         $buscar_idUsuario = soloNumeros($_REQUEST["idUsuario"]);
         $sqlFiltro .= " AND sat_reportes.idUsuario = '".$buscar_idUsuario."'";
     }
     // Optimizar filtros de zona/regional con subconsultas
-    if ($_SESSION["id_zona"]!="" && $_SESSION["id_zona"]!=0) {
+    // Priorizar parámetros de REQUEST sobre sesión, pero solo si no están vacíos
+    if(isset($_REQUEST["empresa_sitio_cor"]) && $_REQUEST["empresa_sitio_cor"] != "") {
+        $buscar_zona = soloNumeros($_REQUEST["empresa_sitio_cor"]);
+        if($buscar_zona != "") {
+            $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT UE.idUsuario FROM usuario_empresa UE LEFT JOIN categorias C ON C.id = UE.empresa_pd WHERE C.idSec = '".$buscar_zona."')";
+        }
+    } else if (!isset($_REQUEST["empresa_sitio_cor"]) && $_SESSION["id_zona"]!="" && $_SESSION["id_zona"]!=0) {
         $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT UE.idUsuario FROM usuario_empresa UE LEFT JOIN categorias C ON C.id = UE.empresa_pd WHERE C.idSec = '".$_SESSION["id_zona"]."')";
         $_REQUEST["empresa_sitio_cor"] = $_SESSION["id_zona"];
         $buscar_zona = $_SESSION["id_zona"];
     }
-    if(isset($_REQUEST["empresa_sitio_cor"]) && soloNumeros($_REQUEST["empresa_sitio_cor"]) != ""){
-        $buscar_zona = soloNumeros($_REQUEST["empresa_sitio_cor"]);
-        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT UE.idUsuario FROM usuario_empresa UE LEFT JOIN categorias C ON C.id = UE.empresa_pd WHERE C.idSec = '".$buscar_zona."')";
-    }
     
-    if(isset($_REQUEST["empresa_pd"]) && soloNumeros($_REQUEST["empresa_pd"]) != ""){
+    // Priorizar parámetros de REQUEST sobre sesión para empresa_pd, pero solo si no están vacíos
+    if(isset($_REQUEST["empresa_pd"]) && $_REQUEST["empresa_pd"] != "") {
         $buscar_regional = soloNumeros($_REQUEST["empresa_pd"]);
-        $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT idUsuario FROM usuario_empresa WHERE empresa_pd = '".$buscar_regional."')";
-    }else if ($_SESSION["empresa_pd"]!="" && $_SESSION["empresa_pd"]!=0) {
+        if($buscar_regional != "") {
+            $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT idUsuario FROM usuario_empresa WHERE empresa_pd = '".$buscar_regional."')";
+        }
+    } else if (!isset($_REQUEST["empresa_pd"]) && $_SESSION["empresa_pd"]!="" && $_SESSION["empresa_pd"]!=0) {
         $buscar_regional = soloNumeros($_SESSION["empresa_pd"]);
         $sqlFiltro .= " AND sat_reportes.idUsuario IN (SELECT idUsuario FROM usuario_empresa WHERE empresa_pd = '".$_SESSION["empresa_pd"]."')";
         $_REQUEST["empresa_pd"] = $_SESSION["empresa_pd"];
@@ -380,6 +393,8 @@ else{
     if(isset($_REQUEST["sitioReunion"]) && soloNumeros($_REQUEST["sitioReunion"]) != ""){
         $buscar_prision = soloNumeros($_REQUEST["sitioReunion"]);
         $sqlFiltro .= " AND sat_reportes.sitioReunion = ".$buscar_prision."";
+    } else {
+        $buscar_prision = isset($_REQUEST["sitioReunion"]) ? $_REQUEST["sitioReunion"] : "";
     }
     
     //
@@ -396,11 +411,15 @@ else{
     if(isset($_REQUEST["fechaInicial"]) && eliminarInvalidos($_REQUEST["fechaInicial"]) != ""){
         $fechaInicial = eliminarInvalidos($_REQUEST["fechaInicial"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte >= '".$fechaInicial."'";
+    } else {
+        $fechaInicial = $_REQUEST["fechaInicial"];
     }
-    //
+    
     if(isset($_REQUEST["fechaFinal"]) && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
         $fechaFinal = eliminarInvalidos($_REQUEST["fechaFinal"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte <= '".$fechaFinal."'";
+    } else {
+        $fechaFinal = $_REQUEST["fechaFinal"];
     }    
     
     // Conteo optimizado - consulta simple

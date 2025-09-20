@@ -16,11 +16,19 @@ $gloEmpresa = "Confraternidad Carcelaria";
 
 class DBbase_Sql
 {
-  var $Host     = "db";
+  var $Host     = "localhost";
 
   var $Database = "pfcoiied_db";
-  var $User     = "root";
-  var $Password = 'root';
+  var $User     = "pfcoiied_root";
+  var $Password = "Pfcol2023*";
+
+  function __construct() {
+    // Use environment variables if available (Docker), otherwise use defaults
+    $this->Host     = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?? $this->Host;
+    $this->Database = $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?? $this->Database;
+    $this->User     = $_ENV['DB_USER'] ?? getenv('DB_USER') ?? $this->User;
+    $this->Password = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?? $this->Password;
+  }
 
   var $Link_ID  = 0;
   var $Query_ID = 0;
@@ -1699,7 +1707,8 @@ function imprimirEncontrarCedula($dato, $tipo, $idactual)
 
                     function soloNumeros($string)
                     {
-                      return preg_replace("/[^0-9]/", "", $string);
+                      $result = preg_replace("/[^0-9]/", "", $string);
+                      return $result === "" ? "0" : $result;
                     }
 
                     function alertaDiasFaltantes()

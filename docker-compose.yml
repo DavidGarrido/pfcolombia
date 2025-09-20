@@ -14,23 +14,12 @@ services:
       - ./xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html
-      # Cambia el host de la DB para que la aplicación se conecte a ProxySQL
-      - DB_HOST=proxysql
-      - DB_PORT=3306
-    depends_on:
-      - proxysql
-
-  proxysql:
-    image: proxysql/proxysql
-    container_name: proxysql_pfcolombia
-    restart: always
-    # Solo exponemos el puerto de administración (6032)
-    ports:
-      - "6032:6032"
+      - DB_HOST=db
+      - DB_DATABASE=pfcoiied_db  
+      - DB_USER=pfcoiied_root
+      - DB_PASSWORD=Pfcol2023*
     depends_on:
       - db
-    volumes:
-      - ./proxysql.cnf:/etc/proxysql.cnf
 
   db:
     image: mysql:5.7
@@ -38,7 +27,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: twsselvr_videx_app
+      MYSQL_DATABASE: pfcoiied_db
     command: --sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"
     ports:
       - "3306:3306"
