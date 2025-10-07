@@ -52,9 +52,10 @@ if(isset($_REQUEST["excelXML"])){
     //$sqlFiltro .= " AND sat_reportes.generacionNumero != 77";
     //$sqlFiltro .= " AND sat_reportes.generacionNumero != 8";
 
-    if($_SESSION["perfil"] == 163){
-        $_REQUEST["idUsuario"] = $_SESSION["id"];
-    } 
+    // Comentado: Filtro automático por perfil puede limitar resultados innecesariamente
+    // if($_SESSION["perfil"] == 163){
+    //     $_REQUEST["idUsuario"] = $_SESSION["id"];
+    // } 
     $empresa_paisid_txt = "Confraternidad carcelaria";
     if(isset($_REQUEST["empresa_paisid"]) && soloNumeros($_REQUEST["empresa_paisid"]) != ""){
         $empresa_paisid = soloNumeros($_REQUEST["empresa_paisid"]);
@@ -79,7 +80,7 @@ if(isset($_REQUEST["excelXML"])){
     }
     
     
-    if(isset($_REQUEST["idUsuario"]) && soloNumeros($_REQUEST["idUsuario"]) != ""){
+    if(isset($_REQUEST["idUsuario"]) && trim($_REQUEST["idUsuario"]) != "" && soloNumeros($_REQUEST["idUsuario"]) != ""){
         $buscar_idUsuario = soloNumeros($_REQUEST["idUsuario"]);
         $sqlFiltro .= " AND sat_reportes.idUsuario = '".$buscar_idUsuario."'";
     }
@@ -160,25 +161,15 @@ else{
     }
 
 
-    /*
-    *	TRAEMOS EL CONTEO ED LOS REGISTROS POR USUARIO QUE ES EL AGRUPADOR.
-    */
-    $sql = "SELECT count(DISTINCT sat_reportes.idUsuario) as conteo ";
-    $sql .= " FROM sat_reportes ";
-    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
-    LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
-    LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
-    LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
-    LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
-    $sql .= " WHERE 1 AND sat_reportes.rep_tip = 308";
-    //
-    if($_SESSION["perfil"] == 163){
-        $_REQUEST["idUsuario"] = $_SESSION["id"];
-    }
-
     //  YA GENERACION 0 NO CUENTA
     $sqlFiltro .= " AND sat_reportes.generacionNumero != 0";
     $sqlFiltro .= " AND sat_reportes.generacionNumero != 77";
+
+    //
+    // Comentado: Filtro automático por perfil puede limitar resultados innecesariamente
+    // if($_SESSION["perfil"] == 163){
+    //     $_REQUEST["idUsuario"] = $_SESSION["id"];
+    // }
     
 
     if(isset($_REQUEST["fechaInicial"]) && soloNumeros($_REQUEST["fechaInicial"]) != ""){
@@ -189,7 +180,7 @@ else{
         $busquedaFechaFin = eliminarInvalidos($_REQUEST["fechaFinal"]);
     }
 
-    if(isset($_REQUEST["idUsuario"]) && soloNumeros($_REQUEST["idUsuario"]) != ""){
+    if(isset($_REQUEST["idUsuario"]) && trim($_REQUEST["idUsuario"]) != "" && soloNumeros($_REQUEST["idUsuario"]) != ""){
         $buscar_idUsuario = soloNumeros($_REQUEST["idUsuario"]);
         $sqlFiltro .= " AND sat_reportes.idUsuario = '".$buscar_idUsuario."'";
     }
@@ -199,7 +190,7 @@ else{
         $buscar_zona = $_SESSION["id_zona"];
     }
 
-    if(isset($_REQUEST["empresa_pd"]) && soloNumeros($_REQUEST["empresa_pd"]) != ""){
+    if(isset($_REQUEST["empresa_pd"]) && trim($_REQUEST["empresa_pd"]) != "" && soloNumeros($_REQUEST["empresa_pd"]) != ""){
         $buscar_regional = soloNumeros($_REQUEST["empresa_pd"]);
         $sqlFiltro .= " AND RU.reub_reg_fk = '".$buscar_regional."'";
     }else  if ($_SESSION["empresa_pd"]!="" && $_SESSION["empresa_pd"]!=0) {
@@ -208,15 +199,15 @@ else{
         $_REQUEST["empresa_pd"] = $_SESSION["empresa_pd"];
     }
 
-    if(isset($_REQUEST["sitioReunion"]) && soloNumeros($_REQUEST["sitioReunion"]) != ""){
+    if(isset($_REQUEST["sitioReunion"]) && trim($_REQUEST["sitioReunion"]) != "" && soloNumeros($_REQUEST["sitioReunion"]) != ""){
         $buscar_prision = soloNumeros($_REQUEST["sitioReunion"]);
         $sqlFiltro .= " AND sat_reportes.sitioReunion = ".$buscar_prision."";
     }
-    if(isset($_REQUEST["empresa_sitio_cor"]) && soloNumeros($_REQUEST["empresa_sitio_cor"]) != ""){
+    if(isset($_REQUEST["empresa_sitio_cor"]) && trim($_REQUEST["empresa_sitio_cor"]) != "" && soloNumeros($_REQUEST["empresa_sitio_cor"]) != ""){
         $buscar_zona = soloNumeros($_REQUEST["empresa_sitio_cor"]);
         $sqlFiltro .= " AND C.idSec = '".$buscar_zona."'";
     }
-    if(isset($_REQUEST["rep_qua"]) && soloNumeros($_REQUEST["rep_qua"]) != ""){
+    if(isset($_REQUEST["rep_qua"]) && trim($_REQUEST["rep_qua"]) != "" && soloNumeros($_REQUEST["rep_qua"]) != ""){
         $buscar_periodo = soloNumeros($_REQUEST["rep_qua"]);
         $sqlFiltro .= " AND sat_reportes.mapeo_cuarto = '".$buscar_periodo."'";
     }
@@ -248,7 +239,18 @@ else{
         $sqlFiltro .= " AND usuario_empresa.empresa_paisid = '".$empresa_paisid."'";
     }
 
-    //    
+    /*
+    *	TRAEMOS EL CONTEO DE LOS REGISTROS POR USUARIO QUE ES EL AGRUPADOR.
+    */
+    $sql = "SELECT count(DISTINCT sat_reportes.idUsuario) as conteo ";
+    $sql .= " FROM sat_reportes ";
+    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario
+    LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion
+    LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk
+    LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario
+    LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
+    $sql .= " WHERE 1 AND sat_reportes.rep_tip = 308";
+    //
     $sql .= $sqlFiltro." ORDER BY sat_reportes.id DESC";
     //
 
@@ -262,40 +264,84 @@ else{
     }
     $total_paginas = ceil($total_registros / $registros); 
 
-    //GRupos nuevos es el conteo de grupos cuya generación sea mayor a 0.
-    $sql = "SELECT
-                sat_reportes.idUsuario,
-                COUNT(sat_reportes.generacionNumero) AS gruposConteo,
-                
-                SUM(sat_reportes.asistencia_total) as asistencia_total,
-                SUM(sat_reportes.asistencia_hom) as asistencia_hom,
-                SUM(sat_reportes.asistencia_muj) as asistencia_muj,
-                SUM(sat_reportes.asistencia_jov) as asistencia_jov,
-                SUM(sat_reportes.asistencia_nin) as asistencia_nin,
-                
-                SUM(sat_reportes.bautizados) as bautizados,
-                SUM(sat_reportes.bautizadosPeriodo) as bautizadosPeriodo,                
-                SUM(sat_reportes.discipulado) as discipulado,
-                SUM(sat_reportes.desiciones) as desiciones,
-                SUM(sat_reportes.preparandose) as preparandose,
-                SUM(sat_reportes.iglesias_reconocidas) as iglesias_reconocidas,
-                SUM(sat_reportes.graduados) as graduados,
-                SUM(sat_reportes.graduadosPeriodo) as graduadosPeriodo,
-                U.nombre as nombreUsuario,
-                UE.empresa_sitio,
-                UE.empresa_rm,
-                UE.empresa_proceso ";
-    $sql.=" FROM sat_reportes ";
-    $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario 
-    LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion 
-    LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk 
-    LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario 
-    LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
-    //
-    $sql.=" WHERE 1 ".$sqlFiltro." AND sat_reportes.rep_tip = 308 GROUP BY sat_reportes.idUsuario ORDER BY U.nombre ASC";
-    $sql.= " LIMIT ".$inicio.", ".$registros;
-    //
-    $PSN1->query($sql);
+    // Paso 1: Obtener solo los IDs de usuarios que cumplen con los filtros (ULTRA OPTIMIZADO)
+
+    // Para casos sin filtros o solo filtros básicos, usar consulta súper simple
+    $only_basic_filters = (
+        strpos($sqlFiltro, 'RU.reub_reg_fk') === false &&
+        strpos($sqlFiltro, 'C.idSec') === false &&
+        strpos($sqlFiltro, 'usuario_empresa.empresa_paisid') === false
+    );
+
+    if ($only_basic_filters) {
+        // Consulta súper rápida sin JOINs para casos básicos
+        $sql_user_ids = "SELECT DISTINCT sat_reportes.idUsuario FROM sat_reportes
+        WHERE 1 ".$sqlFiltro." AND sat_reportes.rep_tip = 308
+        ORDER BY sat_reportes.idUsuario LIMIT ".$inicio.", ".$registros;
+    } else {
+        // Consulta con JOINs solo cuando sea necesario
+        $sql_user_ids = "SELECT DISTINCT sat_reportes.idUsuario FROM sat_reportes";
+
+        $needs_regional_join = (strpos($sqlFiltro, 'RU.reub_reg_fk') !== false);
+        $needs_categoria_join = (strpos($sqlFiltro, 'C.idSec') !== false);
+        $needs_empresa_join = (strpos($sqlFiltro, 'usuario_empresa.empresa_paisid') !== false);
+
+        if ($needs_regional_join || $needs_categoria_join) {
+            $sql_user_ids .= " LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion";
+        }
+        if ($needs_categoria_join) {
+            $sql_user_ids .= " LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk";
+        }
+        if ($needs_empresa_join) {
+            $sql_user_ids .= " LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario";
+        }
+
+        $sql_user_ids .= " WHERE 1 ".$sqlFiltro." AND sat_reportes.rep_tip = 308
+        ORDER BY sat_reportes.idUsuario LIMIT ".$inicio.", ".$registros;
+    }
+
+    $PSN_user_ids = new DBbase_Sql;
+    $PSN_user_ids->query($sql_user_ids);
+    $user_ids = [];
+    while($PSN_user_ids->next_record()){
+        $user_ids[] = $PSN_user_ids->f('idUsuario');
+    }
+
+    // Paso 2: Solo si hay IDs de usuarios, obtener los datos completos agrupados (RÁPIDO)
+    if (count($user_ids) > 0) {
+        $sql = "SELECT
+                    sat_reportes.idUsuario,
+                    COUNT(sat_reportes.generacionNumero) AS gruposConteo,
+
+                    SUM(sat_reportes.asistencia_total) as asistencia_total,
+                    SUM(sat_reportes.asistencia_hom) as asistencia_hom,
+                    SUM(sat_reportes.asistencia_muj) as asistencia_muj,
+                    SUM(sat_reportes.asistencia_jov) as asistencia_jov,
+                    SUM(sat_reportes.asistencia_nin) as asistencia_nin,
+
+                    SUM(sat_reportes.bautizados) as bautizados,
+                    SUM(sat_reportes.bautizadosPeriodo) as bautizadosPeriodo,
+                    SUM(sat_reportes.discipulado) as discipulado,
+                    SUM(sat_reportes.desiciones) as desiciones,
+                    SUM(sat_reportes.preparandose) as preparandose,
+                    SUM(sat_reportes.iglesias_reconocidas) as iglesias_reconocidas,
+                    SUM(sat_reportes.graduados) as graduados,
+                    SUM(sat_reportes.graduadosPeriodo) as graduadosPeriodo,
+                    U.nombre as nombreUsuario,
+                    UE.empresa_sitio,
+                    UE.empresa_rm,
+                    UE.empresa_proceso ";
+        $sql.=" FROM sat_reportes ";
+        $sql .= " LEFT JOIN usuario AS U ON U.id = sat_reportes.idUsuario
+        LEFT JOIN tbl_regional_ubicacion AS RU ON RU.reub_id = sat_reportes.sitioReunion
+        LEFT JOIN categorias AS C ON C.id = RU.reub_reg_fk
+        LEFT JOIN usuario_empresa AS UE ON UE.idUsuario = sat_reportes.idUsuario
+        LEFT JOIN categorias AS CA ON CA.id = C.idSec ";
+        //
+        $sql.=" WHERE sat_reportes.idUsuario IN (" . implode(',', $user_ids) . ") AND sat_reportes.rep_tip = 308 ".$sqlFiltro." GROUP BY sat_reportes.idUsuario ORDER BY U.nombre ASC";
+        //
+        $PSN1->query($sql);
+    }
     $numero=$PSN1->num_rows();
 ?>
 <div class="container">

@@ -23,11 +23,27 @@ class DBbase_Sql
   var $Password = "Pfcol2023*";
 
   function __construct() {
-    // Use environment variables if available (Docker), otherwise use defaults
-    $this->Host     = $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?? $this->Host;
-    $this->Database = $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?? $this->Database;
-    $this->User     = $_ENV['DB_USER'] ?? getenv('DB_USER') ?? $this->User;
-    $this->Password = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?? $this->Password;
+    // Check if running in Docker environment via environment variables
+    $dockerHost = $_ENV['DB_HOST'] ?? getenv('DB_HOST');
+
+    if ($dockerHost === 'db') {
+      // Docker environment detected: use Docker container credentials
+      $this->Host     = $dockerHost;
+      $this->Database = $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?? 'pfcoiied_db';
+
+      // Use Docker-specific credentials if set, otherwise default to root/root
+      $dockerUser = $_ENV['DOCKER_DB_USER'] ?? getenv('DOCKER_DB_USER');
+      $dockerPassword = $_ENV['DOCKER_DB_PASSWORD'] ?? getenv('DOCKER_DB_PASSWORD');
+
+      $this->User     = !empty($dockerUser) ? $dockerUser : 'root';
+      $this->Password = !empty($dockerPassword) ? $dockerPassword : 'root';
+    } else {
+      // Production/local environment: use original credentials with env override
+      $this->Host     = $dockerHost ?? $this->Host;
+      $this->Database = $_ENV['DB_DATABASE'] ?? getenv('DB_DATABASE') ?? $this->Database;
+      $this->User     = $_ENV['DB_USER'] ?? getenv('DB_USER') ?? $this->User;
+      $this->Password = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?? $this->Password;
+    }
   }
 
   var $Link_ID  = 0;

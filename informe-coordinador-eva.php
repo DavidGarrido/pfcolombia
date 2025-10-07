@@ -52,9 +52,10 @@ if(isset($_REQUEST["excelXML"])){
     $sqlFiltro .= " AND sat_reportes.generacionNumero != 77";
     $sqlFiltro .= " AND sat_reportes.generacionNumero != 8";
 
-    if($_SESSION["perfil"] == 163){
-        $_REQUEST["idUsuario"] = $_SESSION["id"];
-    } 
+    // Comentado: Filtro automático por perfil puede limitar resultados innecesariamente
+    // if($_SESSION["perfil"] == 163){
+    //     $_REQUEST["idUsuario"] = $_SESSION["id"];
+    // }
     $empresa_paisid_txt = "Confraternidad carcelaria";
     if(isset($_REQUEST["empresa_paisid"]) && soloNumeros($_REQUEST["empresa_paisid"]) != ""){
         $empresa_paisid = soloNumeros($_REQUEST["empresa_paisid"]);

@@ -52,11 +52,12 @@ if(isset($_REQUEST["excelXML"])){
     $sqlFiltro .= " AND sat_reportes.generacionNumero != 77";
     $sqlFiltro .= " AND sat_reportes.generacionNumero != 8";
 
-    if($_SESSION["perfil"] == 163){
-        $_REQUEST["idUsuario"] = $_SESSION["id"];
-    } 
+    // Comentado: Filtro automático por perfil puede limitar resultados innecesariamente
+    // if($_SESSION["perfil"] == 163){
+    //     $_REQUEST["idUsuario"] = $_SESSION["id"];
+    // }
     $empresa_paisid_txt = "Confraternidad carcelaria";
-    if(isset($_REQUEST["empresa_paisid"]) && soloNumeros($_REQUEST["empresa_paisid"]) != ""){
+    if(isset($_REQUEST["empresa_paisid"]) && trim($_REQUEST["empresa_paisid"]) != "" && soloNumeros($_REQUEST["empresa_paisid"]) != ""){
         $empresa_paisid = soloNumeros($_REQUEST["empresa_paisid"]);
         $sqlFiltro .= " AND usuario_empresa.empresa_paisid = '".$empresa_paisid."'";
         
@@ -79,30 +80,30 @@ if(isset($_REQUEST["excelXML"])){
     }
     
     
-    if(isset($_REQUEST["idUsuario"]) && soloNumeros($_REQUEST["idUsuario"]) != ""){
+    if(isset($_REQUEST["idUsuario"]) && trim($_REQUEST["idUsuario"]) != "" && soloNumeros($_REQUEST["idUsuario"]) != ""){
         $buscar_idUsuario = soloNumeros($_REQUEST["idUsuario"]);
         $sqlFiltro .= " AND sat_reportes.idUsuario = '".$buscar_idUsuario."'";
     }
     //
-    if(isset($_REQUEST["idGrupoMadre"]) && soloNumeros($_REQUEST["idGrupoMadre"]) != ""){
+    if(isset($_REQUEST["idGrupoMadre"]) && trim($_REQUEST["idGrupoMadre"]) != "" && soloNumeros($_REQUEST["idGrupoMadre"]) != ""){
         $buscar_idGrupoMadre = soloNumeros($_REQUEST["idGrupoMadre"]);
         $sqlFiltro .= " AND sat_reportes.idGrupoMadre = '".$buscar_idGrupoMadre."'";
     }
     
     //
-    if(isset($_REQUEST["nombre"]) && eliminarInvalidos($_REQUEST["nombre"]) != ""){
+    if(isset($_REQUEST["nombre"]) && trim($_REQUEST["nombre"]) != "" && eliminarInvalidos($_REQUEST["nombre"]) != ""){
         $buscar_nombre = eliminarInvalidos($_REQUEST["nombre"]);
         $sqlFiltro .= " AND sat_reportes.plantador LIKE '%".$buscar_nombre."%'";
     }
     
     //
-    if(isset($_REQUEST["fechaInicial"]) && eliminarInvalidos($_REQUEST["fechaInicial"]) != ""){
+    if(isset($_REQUEST["fechaInicial"]) && trim($_REQUEST["fechaInicial"]) != "" && eliminarInvalidos($_REQUEST["fechaInicial"]) != ""){
         $fechaInicial = eliminarInvalidos($_REQUEST["fechaInicial"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte >= '".$fechaInicial."'";
     }
     
     //
-    if(isset($_REQUEST["fechaFinal"]) && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
+    if(isset($_REQUEST["fechaFinal"]) && trim($_REQUEST["fechaFinal"]) != "" && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
         $fechaFinal = eliminarInvalidos($_REQUEST["fechaFinal"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte <= '".$fechaFinal."'";
     }
@@ -167,24 +168,25 @@ if(isset($_REQUEST["excelXML"])){
     $sql .= " WHERE 1 AND sat_reportes.rep_tip = 318";
     //echo $sql;
     //
-    if($_SESSION["perfil"] == 163){
-        $_REQUEST["idUsuario"] = $_SESSION["id"];
-    }
+    // Comentado: Filtro automático por perfil puede limitar resultados innecesariamente
+    // if($_SESSION["perfil"] == 163){
+    //     $_REQUEST["idUsuario"] = $_SESSION["id"];
+    // }
 
     //  YA GENERACION 0 NO CUENTA
     //$sqlFiltro .= " AND sat_reportes.generacionNumero != 0";
     //$sqlFiltro .= " AND sat_reportes.generacionNumero != 77";
     
 
-    if(isset($_REQUEST["fechaInicial"]) && soloNumeros($_REQUEST["fechaInicial"]) != ""){
+    if(isset($_REQUEST["fechaInicial"]) && trim($_REQUEST["fechaInicial"]) != "" && soloNumeros($_REQUEST["fechaInicial"]) != ""){
         $busquedaFechaIni = eliminarInvalidos($_REQUEST["fechaInicial"]);
     }
     //
-    if(isset($_REQUEST["fechaFinal"]) && soloNumeros($_REQUEST["fechaFinal"]) != ""){
+    if(isset($_REQUEST["fechaFinal"]) && trim($_REQUEST["fechaFinal"]) != "" && soloNumeros($_REQUEST["fechaFinal"]) != ""){
         $busquedaFechaFin = eliminarInvalidos($_REQUEST["fechaFinal"]);
     }
 
-    if(isset($_REQUEST["idUsuario"]) && soloNumeros($_REQUEST["idUsuario"]) != ""){
+    if(isset($_REQUEST["idUsuario"]) && trim($_REQUEST["idUsuario"]) != "" && soloNumeros($_REQUEST["idUsuario"]) != ""){
         $buscar_idUsuario = soloNumeros($_REQUEST["idUsuario"]);
         $sqlFiltro .= " AND sat_reportes.idUsuario = '".$buscar_idUsuario."'";
     }
@@ -194,7 +196,7 @@ if(isset($_REQUEST["excelXML"])){
         $buscar_zona = $_SESSION["id_zona"];
     }
 
-    if(isset($_REQUEST["empresa_pd"]) && soloNumeros($_REQUEST["empresa_pd"]) != ""){
+    if(isset($_REQUEST["empresa_pd"]) && trim($_REQUEST["empresa_pd"]) != "" && soloNumeros($_REQUEST["empresa_pd"]) != ""){
         $buscar_regional = soloNumeros($_REQUEST["empresa_pd"]);
         $sqlFiltro .= " AND C.id = '".$buscar_regional."'";
     }else  if ($_SESSION["empresa_pd"]!="" && $_SESSION["empresa_pd"]!=0) {
@@ -203,21 +205,21 @@ if(isset($_REQUEST["excelXML"])){
         $_REQUEST["empresa_pd"] = $_SESSION["empresa_pd"];
     }
 
-    if(isset($_REQUEST["sitioReunion"]) && soloNumeros($_REQUEST["sitioReunion"]) != ""){
+    if(isset($_REQUEST["sitioReunion"]) && trim($_REQUEST["sitioReunion"]) != "" && soloNumeros($_REQUEST["sitioReunion"]) != ""){
         $buscar_prision = soloNumeros($_REQUEST["sitioReunion"]);
         $sqlFiltro .= " AND sat_reportes.sitioReunion = ".$buscar_prision."";
     }
-    if(isset($_REQUEST["empresa_sitio_cor"]) && soloNumeros($_REQUEST["empresa_sitio_cor"]) != ""){
+    if(isset($_REQUEST["empresa_sitio_cor"]) && trim($_REQUEST["empresa_sitio_cor"]) != "" && soloNumeros($_REQUEST["empresa_sitio_cor"]) != ""){
         $buscar_zona = soloNumeros($_REQUEST["empresa_sitio_cor"]);
         $sqlFiltro .= " AND C.idSec = '".$buscar_zona."'";
     }
-    if(isset($_REQUEST["rep_qua"]) && soloNumeros($_REQUEST["rep_qua"]) != ""){
+    if(isset($_REQUEST["rep_qua"]) && trim($_REQUEST["rep_qua"]) != "" && soloNumeros($_REQUEST["rep_qua"]) != ""}{
         $buscar_periodo = soloNumeros($_REQUEST["rep_qua"]);
         $sqlFiltro .= " AND sat_reportes.mapeo_cuarto = '".$buscar_periodo."'";
     }
 
     //
-    if(isset($_REQUEST["rep_inex"]) && eliminarInvalidos($_REQUEST["rep_inex"]) != ""){
+    if(isset($_REQUEST["rep_inex"]) && trim($_REQUEST["rep_inex"]) != "" && eliminarInvalidos($_REQUEST["rep_inex"]) != ""}{
         $tipo = eliminarInvalidos($_REQUEST["rep_inex"]);
         if ($tipo == 2) {
             $sqlFiltro .= " AND sat_reportes.sitioReunion = 0 ";
@@ -228,17 +230,17 @@ if(isset($_REQUEST["excelXML"])){
         $_REQUEST["rep_inex"] = "";
     }
     //
-    if(isset($_REQUEST["fechaInicial"]) && eliminarInvalidos($_REQUEST["fechaInicial"]) != ""){
+    if(isset($_REQUEST["fechaInicial"]) && trim($_REQUEST["fechaInicial"]) != "" && eliminarInvalidos($_REQUEST["fechaInicial"]) != ""){
         $fechaInicial = eliminarInvalidos($_REQUEST["fechaInicial"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte >= '".$fechaInicial."'";
     }
     //
-    if(isset($_REQUEST["fechaFinal"]) && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
+    if(isset($_REQUEST["fechaFinal"]) && trim($_REQUEST["fechaFinal"]) != "" && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
         $fechaFinal = eliminarInvalidos($_REQUEST["fechaFinal"]);
         $sqlFiltro .= " AND sat_reportes.fechaReporte <= '".$fechaFinal."'";
     }
 
-    if(isset($_REQUEST["empresa_paisid"]) && soloNumeros($_REQUEST["empresa_paisid"]) != ""){
+    if(isset($_REQUEST["empresa_paisid"]) && trim($_REQUEST["empresa_paisid"]) != "" && soloNumeros($_REQUEST["empresa_paisid"]) != ""){
         $empresa_paisid = soloNumeros($_REQUEST["empresa_paisid"]);
         $sqlFiltro .= " AND usuario_empresa.empresa_paisid = '".$empresa_paisid."'";
     }
@@ -562,11 +564,11 @@ if(isset($_REQUEST["excelXML"])){
                     //
                     //
                     $sqlFiltro = "";
-                    if(isset($_REQUEST["fechaInicial"]) && eliminarInvalidos($_REQUEST["fechaInicial"]) != ""){
+                    if(isset($_REQUEST["fechaInicial"]) && trim($_REQUEST["fechaInicial"]) != "" && eliminarInvalidos($_REQUEST["fechaInicial"]) != ""){
                         $sqlFiltro .= " AND sat_reportes.fechaReporte >= '".$fechaInicial."'";
                     }
                     //
-                    if(isset($_REQUEST["fechaFinal"]) && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
+                    if(isset($_REQUEST["fechaFinal"]) && trim($_REQUEST["fechaFinal"]) != "" && eliminarInvalidos($_REQUEST["fechaFinal"]) != ""){
                         $sqlFiltro .= " AND sat_reportes.fechaReporte <= '".$fechaFinal."'";
                     }
 
